@@ -24,23 +24,23 @@
 <form id="collectVariables" class="form-inline">
   <div class="form-group bmargin">
     <label for="ivoltage">Initial Voltage:</label>
-    <input type="text" class="form-control" id="ivoltage" value="5">
+    <input type="text" class="form-control" id="ivoltage" value="5" placeholder="5">
   </div>
   <div class="form-group bmargin">
     <label for="frequency">Frequency, w (in radians/sec):</label>
-    <input type="text" class="form-control" id="frequency" value="2">
+    <input type="text" class="form-control" id="frequency" value="2" placeholder="2">
   </div>
   <div class="form-group bmargin">
     <label for="tvalue">Time (in seconds):</label>
-    <input type="text" class="form-control" id="tvalue" value="10">
+    <input type="text" class="form-control" id="tvalue" value="10" placeholder="10">
   </div>
   <div class="form-group bmargin">
     <label for="lvalue">Inductor value, L (in Henry):</label>
-    <input type="text" class="form-control" id="lvalue" value="10^{-9}">
+    <input type="text" class="form-control" id="lvalue" value="10^{-9}" placeholder="10^{-9}">
   </div>
   <div class="form-group bmargin">
     <label for="cvalue">Capacitor value, C (in Farad):</label>
-    <input type="text" class="form-control" id="cvalue" value="10^{8}">
+    <input type="text" class="form-control" id="cvalue" value="10^{8}" placeholder="10^{8}">
   </div><br>
   <button type="submit" class="btn btn-default bmargin">Submit</button>
 </form>
@@ -64,6 +64,21 @@
     }
     createGraph("5", "2", "10", "10^{-9}", "10^{8}");
     function createGraph(ivol, freq, tval, lval, cval) {
+      if(ivol.length == 0){
+        ivol = "5"
+      }
+      if(freq.length == 0){
+        freq = "2"
+      }
+      if(tval.length == 0){
+        tval = "10"
+      }
+      if(lval.length == 0){
+        lval = "10^{-9}"
+      }
+      if(cval.length == 0){
+        cval = "10^{8}"
+      }
       var pageWidth = $(document).width();
       var pageHeight = $(document).height();
       var collectHeight = $('#collectVariables').height();
