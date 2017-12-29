@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://www.desmos.com/api/v1.0/docs/examples/parabola.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="js/calculator.js"></script>
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <script src="js/bootstrap.min.js"></script>
+</head>
+<style>
+  #calculator{
+    margin: 0 auto;
+    text-align: center;
+  }
+  #collectVariables{
+    margin: 15px auto;
+    text-align: center;
+  }
+  .bmargin{
+    margin-bottom: 10px !important;
+  }
+</style>
+<body>
+<form id="collectVariables" class="form-inline">
+  <div class="form-group bmargin">
+    <label for="ivoltage">Initial Voltage:</label>
+    <input type="text" class="form-control" id="ivoltage" value="5">
+  </div>
+  <div class="form-group bmargin">
+    <label for="frequency">Frequency, w (in radians/sec):</label>
+    <input type="text" class="form-control" id="frequency" value="2">
+  </div>
+  <div class="form-group bmargin">
+    <label for="tvalue">Time (in seconds):</label>
+    <input type="text" class="form-control" id="tvalue" value="10">
+  </div>
+  <div class="form-group bmargin">
+    <label for="lvalue">Inductor value, L (in Henry):</label>
+    <input type="text" class="form-control" id="lvalue" value="10^{-9}">
+  </div>
+  <div class="form-group bmargin">
+    <label for="cvalue">Capacitor value, C (in Farad):</label>
+    <input type="text" class="form-control" id="cvalue" value="10^{8}">
+  </div><br>
+  <button type="submit" class="btn btn-default bmargin">Submit</button>
+</form>
+  <div id="calculator" style="width: 700px; height: 400px;" class="bmargin"></div>
+  <script>
+    var element = document.querySelector('form');
+    element.addEventListener('submit', function(event){
+      event.preventDefault();
+      $('#calculator').children().remove();
+      collectVars();
+    });
+    function collectVars() {
+      var ivoltage = $('#ivoltage').val();
+      var frequency = $('#frequency').val();
+      var tvalue = $('#tvalue').val();
+      var lvalue = $('#lvalue').val();
+      var cvalue = $('#cvalue').val();
+
+//      console.log(ivoltage, frequency, tvalue, lvalue,cvalue);
+      createGraph(ivoltage, frequency, tvalue, lvalue,cvalue);
+    }
+    createGraph("5", "2", "10", "10^{-9}", "10^{8}");
+    function createGraph(ivol, freq, tval, lval, cval) {
+      var pageWidth = $(document).width();
+      var pageHeight = $(document).height();
+      var collectHeight = $('#collectVariables').height();
+      var elt = document.getElementById('calculator');
+      var calculator = Desmos.GraphingCalculator(elt, {
+        expressionsCollapsed: true,
+        keypad: false,
+        autosize: false
+      });
+      elt.style.height = String(pageHeight - collectHeight - 50) + 'px';
+      elt.style.width = String(pageWidth - 100) + 'px';
+      calculator.resize();
+      calculator.setExpression({id: 'graph1', latex: 'V=V_1 cos(wt-kx)'});
+      calculator.setExpression({id: 'graph2', latex: 'I=V/(LC)^{0.5}'});
+      calculator.setExpression({id: 'v1', latex: 'V_1='+ivol});
+      calculator.setExpression({id: 'v1', sliderBounds: {min: 1, max: 20}});
+      calculator.setExpression({id: 'w', latex: 'w='+freq});
+      calculator.setExpression({id: 'w', sliderBounds: {min: 1, max: 10}});
+      calculator.setExpression({id: 't', latex: 't='+tval});
+      calculator.setExpression({id: 't', sliderBounds: {min: 1, max: 60}});
+      calculator.setExpression({id: 'l', latex: 'L='+lval});
+      calculator.setExpression({id: 'c', latex: 'C='+cval});
+      calculator.setExpression({id: 'k', latex: 'k=w(LC)^{0.5}'});
+    }
+  </script>
+
+<p aria-live="assertive" aria-atomic="true" class="dcg-mq-aria-alert"></p><p aria-live="assertive" aria-atomic="true" class="dcg-aria-alert"></p></body></html>
