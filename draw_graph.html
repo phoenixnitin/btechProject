@@ -19,6 +19,9 @@
   .bmargin{
     margin-bottom: 10px !important;
   }
+  .dcg-graphpaper-branding.dcg-unclickable{
+    display: none;
+  }
 </style>
 <body>
 <form id="collectVariables" class="form-inline">
@@ -46,6 +49,9 @@
 </form>
   <div id="calculator" style="width: 700px; height: 400px;" class="bmargin"></div>
   <script>
+    $(document).ready(function () {
+       $('.dcg-expressions-branding').remove();
+    });
     var element = document.querySelector('form');
     element.addEventListener('submit', function(event){
       event.preventDefault();
