@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://www.desmos.com/api/v1.0/docs/examples/parabola.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/math.min.js"></script>
+</head>
+<style>
+  .bmargin{
+    margin-bottom: 10px !important;
+  }
+  img{
+    width: 100%;
+  }
+  .tline{
+    margin-bottom:10px;
+  }
+</style>
+<body>
+<div class="container">
+  <div class="container-fluid">
+    <div class="col-sm-12 col-md-6 tline">
+      <h3>Transmission Line:</h3>
+      <img src="img/transmission_line.png">
+    </div>
+    <div class="col-sm-12 col-md-6">
+      <form id="collectVariables" class="form-inline">
+        <div class="form-group bmargin">
+          <label for="ivoltage">Initial Voltage, V<sub>s</sub> (in volts):</label>
+          <input type="text" class="form-control" id="ivoltage" value="5" placeholder="5">
+        </div>
+        <div class="form-group bmargin">
+          <label for="frequency">Signal Frequency, f(in Hz):</label>
+          <input type="text" class="form-control" id="frequency" value="5" placeholder="5">
+        </div>
+        <div class="form-group bmargin">
+          <label for="icurrent">Initial Voltage, I<sub>o</sub> (in Amp):</label>
+          <input type="text" class="form-control" id="icurrent" value="5" placeholder="5">
+        </div>
+        <div class="form-group bmargin">
+          <label for="sourceImp">Source Impedance, Z<sub>s</sub>:</label>
+          <input type="text" class="form-control" id="sourceImp" value="2" placeholder="2">
+        </div>
+        <div class="form-group bmargin">
+          <label for="loadImp">Load Impedance, Z<sub>L</sub>:</label>
+          <input type="text" class="form-control" id="loadImp" value="10" placeholder="10">
+        </div>
+        <div class="form-group bmargin">
+          <label for="rvalue">Inductor value, R (in ohm/m):</label>
+          <input type="text" class="form-control" id="rvalue" value="10^{-9}" placeholder="10^{-9}">
+        </div>
+        <div class="form-group bmargin">
+          <label for="lvalue">Capacitor value, L (in Henry/m):</label>
+          <input type="text" class="form-control" id="lvalue" value="10^{8}" placeholder="10^{8}">
+        </div>
+        <div class="form-group bmargin">
+          <label for="cvalue">Inductor value, C (in Farad/m):</label>
+          <input type="text" class="form-control" id="cvalue" value="10^{-9}" placeholder="10^{-9}">
+        </div>
+        <div class="form-group bmargin">
+          <label for="gvalue">Capacitor value, G (in mho/m):</label>
+          <input type="text" class="form-control" id="gvalue" value="10^{8}" placeholder="10^{8}">
+        </div><br>
+        <div class="form-group bmargin">
+          <label for="numberofcell">Number of unit cell:</label>
+          <input type="text" class="form-control" id="numberofcell" value="100" placeholder="100">
+        </div>
+        <div class="form-group bmargin">
+          <label>Select unit cell: </label>
+          <label><input type="radio" name="optradio" value="1"><img style="width: 80%" src="img/unit_cell_1.png"></label><br>
+        </div><br>
+        <button type="submit" id="setCookie" class="btn btn-default bmargin">Generate Graph</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  var element = document.querySelector('form');
+    element.addEventListener('submit', function(event){
+      event.preventDefault();
+      var cook = {};
+      cook['sourceV']=$('#ivoltage').val();
+      cook['frequency']=$('#frequency').val();
+      cook['initialI']=$('#icurrent').val();
+      cook['sourceImp']=$('#sourceImp').val();
+      cook['loadImp']=$('#loadImp').val();
+      cook['resistance']=$('#rvalue').val();
+      cook['inductance']=$('#lvalue').val();
+      cook['capacitance']=$('#cvalue').val();
+      cook['conductance']=$('#gvalue').val();
+      cook['numberofcell']=$('#numberofcell').val();
+      cook['unitcell']=document.querySelector('input[name="optradio"]:checked').value;
+      console.log(cook, JSON.stringify(cook));
+      document.cookie = "data="+JSON.stringify(cook)+"path:/;expires:";
+    });
+</script>
+</body>
+</html>
