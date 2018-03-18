@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0059)https://www.desmos.com/api/v1.0/docs/examples/parabola.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="js/jquery-3.2.1.min.js"></script>
@@ -29,39 +28,31 @@
       <form id="collectVariables" class="form-inline">
         <div class="form-group bmargin">
           <label for="ivoltage">Initial Voltage, V<sub>s</sub> (in volts):</label>
-          <input type="text" class="form-control" id="ivoltage" value="5" placeholder="5">
-        </div>
-        <div class="form-group bmargin">
-          <label for="frequency">Signal Frequency, f(in Hz):</label>
-          <input type="text" class="form-control" id="frequency" value="5" placeholder="5">
-        </div>
-        <div class="form-group bmargin">
-          <label for="icurrent">Initial Voltage, I<sub>o</sub> (in Amp):</label>
-          <input type="text" class="form-control" id="icurrent" value="5" placeholder="5">
+          <input type="text" class="form-control" id="ivoltage" value="5 cos(50t)" placeholder="5 cos(50t)">
         </div>
         <div class="form-group bmargin">
           <label for="sourceImp">Source Impedance, Z<sub>s</sub>:</label>
-          <input type="text" class="form-control" id="sourceImp" value="2" placeholder="2">
+          <input type="text" class="form-control" id="sourceImp" value="2+3i" placeholder="2+3i">
         </div>
         <div class="form-group bmargin">
           <label for="loadImp">Load Impedance, Z<sub>L</sub>:</label>
-          <input type="text" class="form-control" id="loadImp" value="10" placeholder="10">
+          <input type="text" class="form-control" id="loadImp" value="100+25i" placeholder="100+25i">
         </div>
         <div class="form-group bmargin">
-          <label for="rvalue">Inductor value, R (in ohm/m):</label>
-          <input type="text" class="form-control" id="rvalue" value="10^{-9}" placeholder="10^{-9}">
+          <label for="rvalue">Resistor value, R (in ohm/cm):</label>
+          <input type="text" class="form-control" id="rvalue" value="10^(-3)" placeholder="10^(-3)">
         </div>
         <div class="form-group bmargin">
-          <label for="lvalue">Capacitor value, L (in Henry/m):</label>
-          <input type="text" class="form-control" id="lvalue" value="10^{8}" placeholder="10^{8}">
+          <label for="lvalue">Inductor value, L (in Henry/cm):</label>
+          <input type="text" class="form-control" id="lvalue" value="10^(-2)" placeholder="10^(-2)">
         </div>
         <div class="form-group bmargin">
-          <label for="cvalue">Inductor value, C (in Farad/m):</label>
-          <input type="text" class="form-control" id="cvalue" value="10^{-9}" placeholder="10^{-9}">
+          <label for="cvalue">Capacitor value, C (in Farad/cm):</label>
+          <input type="text" class="form-control" id="cvalue" value="10^(-2)" placeholder="10^(-2)">
         </div>
         <div class="form-group bmargin">
-          <label for="gvalue">Capacitor value, G (in mho/m):</label>
-          <input type="text" class="form-control" id="gvalue" value="10^{8}" placeholder="10^{8}">
+          <label for="gvalue">Conductance value, G (in mho/cm):</label>
+          <input type="text" class="form-control" id="gvalue" value="10^(-2)" placeholder="10^(-2)">
         </div><br>
         <div class="form-group bmargin">
           <label for="numberofcell">Number of unit cell:</label>
@@ -77,24 +68,100 @@
   </div>
 </div>
 <script>
+  // voltage datasets
+  voltage = [[],[],[],[],[]];
+  // current datasets
+  current = [[],[],[],[],[]];
   var element = document.querySelector('form');
-    element.addEventListener('submit', function(event){
-      event.preventDefault();
-      var cook = {};
-      cook['sourceV']=$('#ivoltage').val();
-      cook['frequency']=$('#frequency').val();
-      cook['initialI']=$('#icurrent').val();
-      cook['sourceImp']=$('#sourceImp').val();
-      cook['loadImp']=$('#loadImp').val();
-      cook['resistance']=$('#rvalue').val();
-      cook['inductance']=$('#lvalue').val();
-      cook['capacitance']=$('#cvalue').val();
-      cook['conductance']=$('#gvalue').val();
-      cook['numberofcell']=$('#numberofcell').val();
-      cook['unitcell']=document.querySelector('input[name="optradio"]:checked').value;
-      console.log(cook, JSON.stringify(cook));
-      document.cookie = "data="+JSON.stringify(cook)+"path:/;expires:";
+  element.addEventListener('submit', function(event){
+    event.preventDefault();
+    voltage = [[],[],[],[],[]];
+    current = [[],[],[],[],[]];
+    var cook = {};
+    cook['sourceV']=$('#ivoltage').val();
+    cook['sourceImp']=$('#sourceImp').val();
+    cook['loadImp']=$('#loadImp').val();
+    cook['resistance']=$('#rvalue').val();
+    cook['inductance']=$('#lvalue').val();
+    cook['capacitance']=$('#cvalue').val();
+    cook['conductance']=$('#gvalue').val();
+    cook['numberofcell']=$('#numberofcell').val();
+    cook['unitcell']=document.querySelector('input[name="optradio"]:checked').value;
+    console.log(cook, JSON.stringify(cook));
+    document.cookie = "data="+JSON.stringify(cook)+";path:/;expires:";
+    var sourceV = {"amp":"", "w":"", "f":"", "name":""};
+    var sourceImp = math.complex(cook['sourceImp']);
+    var loadImp = math.complex(cook['loadImp']);
+    var Volt = math.parse(cook['sourceV']);
+    Volt.args.forEach(function(d, i){
+      if("value" in d)
+      {
+          // console.log(d.value);
+          sourceV.amp = d.value
+      }
+      else{
+          if("value" in d.args[0].args[0])
+              sourceV.w = d.args[0].args[0].value;
+          else
+              sourceV.w = d.args[0].args[1].value;
+          if("name" in d.args[0].args[0])
+              sourceV.name = d.args[0].args[0].name;
+          else
+              sourceV.name = d.args[0].args[1].name;
+          // console.log(d.args[0].args[0].value, d.args[0].args[1].name);
+      }
     });
+    sourceV.f = sourceV.w/(2*Math.PI);
+    console.log(sourceV, sourceImp, loadImp);
+    var r = math.eval($('#rvalue').val());
+    var l = math.eval($('#lvalue').val());
+    var c = math.eval($('#cvalue').val());
+    var g = math.eval($('#gvalue').val());
+    var Zl = math.complex($('#loadImp').val());
+    var Zs = math.complex($('#sourceImp').val());
+    var numberofcell = math.eval($('#numberofcell').val());
+    // propagation constant, p
+    // attenuation constant, a
+    // phase constant, b
+    var b = sourceV.w * Math.sqrt(l * c);
+    var a = (r * Math.sqrt( c / l) / 2) + (g * Math.sqrt( l / c) / 2);
+    var p = math.complex(a,b);
+
+    // characteristic impedance, Zo
+    var Zo = math.sqrt(math.divide(math.complex(r,sourceV.w*l),math.complex(g,sourceV.w * c)));
+    var const_a = calculateTanh(math.multiply(p, numberofcell));
+    var Zin = math.multiply(Zo,math.divide(math.add(Zl, math.multiply(math.complex(0,1),Zo,const_a)),math.add(Zo, math.multiply(math.complex(0,1),Zl, const_a))));
+    var TotalZ = math.add(Zs, Zin);
+    createDataset(2*Math.PI/sourceV.w,numberofcell, sourceImp, TotalZ);
+  });
+  function createDataset(T,numofcell, sourceImp, TotalImp) {
+    var scope = {"t":0*T};
+    var readcookie = document.cookie;
+    var cook = JSON.parse(readcookie.substring(5,readcookie.length));
+    var srcvol = math.parse(cook['sourceV'], scope);
+    var compilesrcvol = srcvol.compile();
+    var srcvolvalues = [];
+    srcvolvalues.push(compilesrcvol.eval(scope));
+    for(var i=0.2;i<1;i=i+0.2){
+      scope = {"t":i*T};
+      srcvolvalues.push(compilesrcvol.eval(scope));
+    };
+
+    for(var i=0;i<5;i++){
+        voltage[i].push(math.subtract(srcvolvalues[i],math.multiply(sourceImp, math.divide(srcvolvalues[i], TotalImp))));
+        current[i].push(math.divide(srcvolvalues[i], TotalImp));
+    }
+
+    // window.setInterval(function () {
+      console.log("Hello");
+    // },2000/numofcell);
+  };
+  function calculateTanh(value) {
+      var e_x = math.dotPow(Math.E, value);
+      var e_minus_x = math.dotPow(Math.E, math.multiply(-1,value));
+      var result = math.divide(math.add(e_x, math.multiply(-1,e_minus_x)), math.add(e_x,e_minus_x));
+      return result;
+  }
 </script>
 </body>
 </html>
