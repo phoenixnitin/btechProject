@@ -5,6 +5,11 @@
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <script src="js/bootstrap.min.js"></script>
   <script src="js/math.min.js"></script>
+  <script src="js/definations.js"></script>
+  <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
+	<script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
+@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
+	<script src="js/chartjs/utils.js"></script>
 </head>
 <style>
   .bmargin{
@@ -16,6 +21,11 @@
   .tline{
     margin-bottom:10px;
   }
+  canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
 </style>
 <body>
 <div class="container">
@@ -28,19 +38,19 @@
       <form id="collectVariables" class="form-inline">
         <div class="form-group bmargin">
           <label for="ivoltage">Initial Voltage, V<sub>s</sub> (in volts):</label>
-          <input type="text" class="form-control" id="ivoltage" value="5 cos(50t)" placeholder="5 cos(50t)">
+          <input type="text" class="form-control" id="ivoltage" value="5 sin(50t)" placeholder="5 sin(50t)">
         </div>
         <div class="form-group bmargin">
           <label for="sourceImp">Source Impedance, Z<sub>s</sub>:</label>
-          <input type="text" class="form-control" id="sourceImp" value="2+3i" placeholder="2+3i">
+          <input type="text" class="form-control" id="sourceImp" value="2" placeholder="2">
         </div>
         <div class="form-group bmargin">
           <label for="loadImp">Load Impedance, Z<sub>L</sub>:</label>
-          <input type="text" class="form-control" id="loadImp" value="100+25i" placeholder="100+25i">
+          <input type="text" class="form-control" id="loadImp" value="100" placeholder="100">
         </div>
         <div class="form-group bmargin">
           <label for="rvalue">Resistor value, R (in ohm/cm):</label>
-          <input type="text" class="form-control" id="rvalue" value="10^(-3)" placeholder="10^(-3)">
+          <input type="text" class="form-control" id="rvalue" value="0" placeholder="0">
         </div>
         <div class="form-group bmargin">
           <label for="lvalue">Inductor value, L (in Henry/cm):</label>
@@ -52,7 +62,7 @@
         </div>
         <div class="form-group bmargin">
           <label for="gvalue">Conductance value, G (in mho/cm):</label>
-          <input type="text" class="form-control" id="gvalue" value="10^(-2)" placeholder="10^(-2)">
+          <input type="text" class="form-control" id="gvalue" value="0" placeholder="0">
         </div><br>
         <div class="form-group bmargin">
           <label for="numberofcell">Number of unit cell:</label>
@@ -65,103 +75,54 @@
         <button type="submit" id="setCookie" class="btn btn-default bmargin">Generate Graph</button>
       </form>
     </div>
+    <div><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+		<canvas id="canvas" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
+	</div>
   </div>
 </div>
 <script>
-  // voltage datasets
-  voltage = [[],[],[],[],[]];
-  // current datasets
-  current = [[],[],[],[],[]];
-  var element = document.querySelector('form');
-  element.addEventListener('submit', function(event){
-    event.preventDefault();
-    voltage = [[],[],[],[],[]];
-    current = [[],[],[],[],[]];
-    var cook = {};
-    cook['sourceV']=$('#ivoltage').val();
-    cook['sourceImp']=$('#sourceImp').val();
-    cook['loadImp']=$('#loadImp').val();
-    cook['resistance']=$('#rvalue').val();
-    cook['inductance']=$('#lvalue').val();
-    cook['capacitance']=$('#cvalue').val();
-    cook['conductance']=$('#gvalue').val();
-    cook['numberofcell']=$('#numberofcell').val();
-    cook['unitcell']=document.querySelector('input[name="optradio"]:checked').value;
-    console.log(cook, JSON.stringify(cook));
-    document.cookie = "data="+JSON.stringify(cook)+";path:/;expires:";
-    var sourceV = {"amp":"", "w":"", "f":"", "name":""};
-    var sourceImp = math.complex(cook['sourceImp']);
-    var loadImp = math.complex(cook['loadImp']);
-    var Volt = math.parse(cook['sourceV']);
-    Volt.args.forEach(function(d, i){
-      if("value" in d)
-      {
-          // console.log(d.value);
-          sourceV.amp = d.value
-      }
-      else{
-          if("value" in d.args[0].args[0])
-              sourceV.w = d.args[0].args[0].value;
-          else
-              sourceV.w = d.args[0].args[1].value;
-          if("name" in d.args[0].args[0])
-              sourceV.name = d.args[0].args[0].name;
-          else
-              sourceV.name = d.args[0].args[1].name;
-          // console.log(d.args[0].args[0].value, d.args[0].args[1].name);
-      }
-    });
-    sourceV.f = sourceV.w/(2*Math.PI);
-    console.log(sourceV, sourceImp, loadImp);
-    var r = math.eval($('#rvalue').val());
-    var l = math.eval($('#lvalue').val());
-    var c = math.eval($('#cvalue').val());
-    var g = math.eval($('#gvalue').val());
-    var Zl = math.complex($('#loadImp').val());
-    var Zs = math.complex($('#sourceImp').val());
-    var numberofcell = math.eval($('#numberofcell').val());
-    // propagation constant, p
-    // attenuation constant, a
-    // phase constant, b
-    var b = sourceV.w * Math.sqrt(l * c);
-    var a = (r * Math.sqrt( c / l) / 2) + (g * Math.sqrt( l / c) / 2);
-    var p = math.complex(a,b);
-
-    // characteristic impedance, Zo
-    var Zo = math.sqrt(math.divide(math.complex(r,sourceV.w*l),math.complex(g,sourceV.w * c)));
-    var const_a = calculateTanh(math.multiply(p, numberofcell));
-    var Zin = math.multiply(Zo,math.divide(math.add(Zl, math.multiply(math.complex(0,1),Zo,const_a)),math.add(Zo, math.multiply(math.complex(0,1),Zl, const_a))));
-    var TotalZ = math.add(Zs, Zin);
-    createDataset(2*Math.PI/sourceV.w,numberofcell, sourceImp, TotalZ);
+  $(document).ready(function () {
+     // $('#canvas').attr('width', $(document).width()-20);
   });
-  function createDataset(T,numofcell, sourceImp, TotalImp) {
-    var scope = {"t":0*T};
-    var readcookie = document.cookie;
-    var cook = JSON.parse(readcookie.substring(5,readcookie.length));
-    var srcvol = math.parse(cook['sourceV'], scope);
-    var compilesrcvol = srcvol.compile();
-    var srcvolvalues = [];
-    srcvolvalues.push(compilesrcvol.eval(scope));
-    for(var i=0.2;i<1;i=i+0.2){
-      scope = {"t":i*T};
-      srcvolvalues.push(compilesrcvol.eval(scope));
-    };
+		var color = Chart.helpers.color;
+		var config = {
+			type: 'line',
+			data: {
+				datasets: [{
+					label: 'Voltage',
+					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.green,
+					fill: false,
+					data: [],
+				}]
+			},
+			options: {
+				title: {
+					text: 'Transmission Line'
+				},
+				scales: {
+					xAxes: [{
+						type: 'linear',
+						scaleLabel: {
+							display: true,
+							labelString: 'Distance(cm)'
+						}
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Voltage(V)'
+						}
+					}]
+				},
+			}
+		};
 
-    for(var i=0;i<5;i++){
-        voltage[i].push(math.subtract(srcvolvalues[i],math.multiply(sourceImp, math.divide(srcvolvalues[i], TotalImp))));
-        current[i].push(math.divide(srcvolvalues[i], TotalImp));
-    }
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
 
-    // window.setInterval(function () {
-      console.log("Hello");
-    // },2000/numofcell);
-  };
-  function calculateTanh(value) {
-      var e_x = math.dotPow(Math.E, value);
-      var e_minus_x = math.dotPow(Math.E, math.multiply(-1,value));
-      var result = math.divide(math.add(e_x, math.multiply(-1,e_minus_x)), math.add(e_x,e_minus_x));
-      return result;
-  }
-</script>
+		};
+	</script>
 </body>
 </html>
