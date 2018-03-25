@@ -5,15 +5,24 @@
   current = [[],[],[],[],[]];
   iplotdata = [[],[],[],[],[]];
 
+//reflection and transmission coefficient
+    ReflectionCoeff = [];
+    TransmissionCoeff = [];
+
 $(document).ready(function () {
 
   // var element = document.getElementsByTagName('form');
   $('#collectVariables').submit(function(event){
     event.preventDefault();
+    for(var i=0; i<config.data.datasets.length;i++)
+        config.data.datasets[i].data=[];
+    window.myLine.update();
     voltage = [[],[],[],[],[]];
     current = [[],[],[],[],[]];
     vplotdata = [[],[],[],[],[]];
     iplotdata = [[],[],[],[],[]];
+    ReflectionCoeff = [];
+    TransmissionCoeff = [];
     var cook = {};
     cook['sourceV']=$('#ivoltage').val();
     cook['sourceImp']=$('#sourceImp').val();
@@ -66,6 +75,8 @@ $(document).ready(function () {
 
     // characteristic impedance, Zo
     var Zo = math.sqrt(math.divide(math.complex(r,sourceV.w*l),math.complex(g,sourceV.w * c)));
+    ReflectionCoeff.push(math.divide(math.subtract(Zo, Zs), math.add(Zo, Zs)));
+    TransmissionCoeff.push(math.divide(math.multiply(2, Zo), math.add(Zo, Zs)));
     var const_a = calculateTanh(math.multiply(p, numberofcell));
     var Zin = math.multiply(Zo,math.divide(math.add(Zl, math.multiply(math.complex(0,1),Zo,const_a)),math.add(Zo, math.multiply(math.complex(0,1),Zl, const_a))));
     var TotalZ = math.add(Zs, Zin);
@@ -86,8 +97,8 @@ function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
     };
 
     for(var i=0;i<5;i++){
-        var V1 = math.subtract(srcvolvalues[i],math.multiply(sourceImp, math.divide(srcvolvalues[i], TotalImp)));
-        var I1 = math.divide(srcvolvalues[i], TotalImp);
+        var V1 = math.multiply(TransmissionCoeff[0], math.subtract(srcvolvalues[i],math.multiply(sourceImp, math.divide(srcvolvalues[i], TotalImp))));
+        var I1 = math.multiply(TransmissionCoeff[0], math.divide(srcvolvalues[i], TotalImp));
         voltage[i].push(V1);
         current[i].push(I1);
         vplotdata[i].push(V1.re);

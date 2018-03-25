@@ -26,6 +26,9 @@
         -webkit-user-select: none;
         -ms-user-select: none;
     }
+  #collectVariables{
+    padding: 10px;
+  }
 </style>
 <body>
 <div class="container">
@@ -38,7 +41,7 @@
       <form id="collectVariables" class="form-inline">
         <div class="form-group bmargin">
           <label for="ivoltage">Initial Voltage, V<sub>s</sub> (in volts):</label>
-          <input type="text" class="form-control" id="ivoltage" value="5 sin(50t)" placeholder="5 sin(50t)">
+          <input type="text" class="form-control" id="ivoltage" value="220 cos(314t)" placeholder="220 cos(314t)">
         </div>
         <div class="form-group bmargin">
           <label for="sourceImp">Source Impedance, Z<sub>s</sub>:</label>
@@ -54,11 +57,11 @@
         </div>
         <div class="form-group bmargin">
           <label for="lvalue">Inductor value, L (in Henry/cm):</label>
-          <input type="text" class="form-control" id="lvalue" value="10^(-2)" placeholder="10^(-2)">
+          <input type="text" class="form-control" id="lvalue" value="0.5 * 10^(-6)" placeholder="0.5 * 10^(-6)">
         </div>
         <div class="form-group bmargin">
           <label for="cvalue">Capacitor value, C (in Farad/cm):</label>
-          <input type="text" class="form-control" id="cvalue" value="10^(-2)" placeholder="10^(-2)">
+          <input type="text" class="form-control" id="cvalue" value="5 * 10^(-12)" placeholder="5 * 10^(-12)">
         </div>
         <div class="form-group bmargin">
           <label for="gvalue">Conductance value, G (in mho/cm):</label>
