@@ -1,19 +1,23 @@
 import math
 import cmath
 
-def sumarray(arr,data):
+def sumarray(arr,data, nodenum):
 	mysum=0
 	for num in arr:
 		mysum+=num
-	print("Total sum equals({}):{}".format(data, mysum))
+	print("Total sum equals({}) @ node({}):{}".format(data, nodenum, mysum))
 
+def drange(start,stop,step):
+	while start<stop:
+		yield start
+		start += step
 
 f=50
-factor=0.3
+# factor=0.3
 w=2*cmath.pi*f
 t=2*cmath.pi/w
-Vs=220*math.cos(w*factor*t)
-print("w={}\tt={}\tVs={}".format(w, t, Vs))
+
+print("w={}\tt={}".format(w, t))
 
 Zs=complex(2,0)
 Zl=complex(100,0)
@@ -50,66 +54,82 @@ Zin=Z0*complex(Zl, Z0*cmath.tanh(gamma*numberofcell))/complex(Z0, Zl*cmath.tanh(
 totalZ=Zs+Zin
 print("Zin={}\ntotalZ={}".format(Zin,totalZ))
 
-Is=Vs/totalZ
-print("Is:{}".format(Is))
-datasetV=[]
-datasetI=[]
+completeDatasetV=[]
+completeDatasetI=[]
+for factor in drange(0, 1, 0.1):
+	print("factor:{}\tw:{}\tt:{}".format(factor,w,t))
+	Vs=220*math.cos(w*factor*t)
+	Is=Vs/totalZ
+	print("Vs:{}   \tIs:{}".format(Vs,Is))
+	datasetV=[]
+	datasetI=[]
 
-datasetV.append([transmissionCoeff[0]*(Vs-Is*Zs)])
-sumarray(datasetV[0],"V")
-datasetI.append([transmissionCoeff[0]*Is])
-sumarray(datasetI[0],"I")
+	datasetV.append([transmissionCoeff[0]*(Vs-Is*Zs)])
+	sumarray(datasetV[0],"V", 1)
+	datasetI.append([transmissionCoeff[0]*Is])
+	sumarray(datasetI[0],"I", 1)
 
-# print("datasetV={}\ndatasetI={}".format(datasetV,datasetI))
+	# print("datasetV={}\ndatasetI={}".format(datasetV,datasetI))
 
-a=complex(R, w*L)
-b=complex(G, w*C)
-# print(a,b)
-# print(a*datasetV[0][0], b*datasetI[0][0])
-for i in range(1,numberofnodes):
-	datasetV.append([datasetV[i-1][0]-a*datasetI[i-1][0]])
-	sumarray(datasetV[i],"V")
-	datasetI.append([datasetI[i-1][0]-b*datasetV[i-1][0]])
-	sumarray(datasetI[i],"I")
+	a=complex(R, w*L)
+	b=complex(G, w*C)
+	# print(a,b)
+	# print(a*datasetV[0][0], b*datasetI[0][0])
+	for i in range(1,numberofnodes):
+		datasetV.append([datasetV[i-1][0]-a*datasetI[i-1][0]])
+		sumarray(datasetV[i],"V", i+1)
+		datasetI.append([datasetI[i-1][0]-b*datasetV[i-1][0]])
+		sumarray(datasetI[i],"I", i+1)
 
-# print("datasetV={}\ndatasetI={}".format(datasetV,datasetI))
-
-
-for i in range(0,numberofreflection):
-	if(i%2==0):
-		for j in range(numberofnodes-1,-1,-1):
-			if(j==numberofnodes-1):
-				datasetV[j].append(reflectionCoeff[1]*datasetV[j][i])
-				sumarray(datasetV[j],"Vref1")
-				datasetI[j].append(reflectionCoeff[1]*datasetI[j][i])
-				sumarray(datasetI[j],"Iref1")
-			else:
-				datasetV[j].append(datasetV[j+1][i+1]-a*datasetI[j+1][i+1])
-				sumarray(datasetV[j],"Vref1")
-				datasetI[j].append(datasetI[j+1][i+1]-b*datasetV[j+1][i+1])
-				sumarray(datasetI[j],"Iref1")
-	else:
-		for j in range(0, numberofnodes):
-			if(j==0):
-				datasetV[j].append(reflectionCoeff[2]*datasetV[j][i])
-				sumarray(datasetV[j],"Vref2")
-				datasetI[j].append(reflectionCoeff[2]*datasetI[j][i])
-				sumarray(datasetI[j],"Iref2")
-			else:
-				datasetV[j].append(datasetV[j-1][i+1]-a*datasetI[j-1][i+1])
-				sumarray(datasetV[j],"Vref2")
-				datasetI[j].append(datasetI[j-1][i+1]-b*datasetV[j-1][i+1])
-				sumarray(datasetI[j],"Iref2")
-
-for i in range(0,numberofreflection+1):
-	if(i%2==0):
-		for j in range(0,len(datasetV)):
-			print("j:{}, i:{})   V:{}   \t I:{}".format(j,i,datasetV[j][i], datasetI[j][i]))
-	else:
-		for j in range(len(datasetV)-1,-1,-1):
-			print("j:{}, i:{})   V:{}   \t I:{}".format(j,i,datasetV[j][i], datasetI[j][i]))
+	# print("datasetV={}\ndatasetI={}".format(datasetV,datasetI))
 
 
+	for i in range(0,numberofreflection):
+		if(i%2==0):
+			for j in range(numberofnodes-1,-1,-1):
+				if(j==numberofnodes-1):
+					datasetV[j].append(reflectionCoeff[1]*datasetV[j][i])
+					sumarray(datasetV[j],"Vref1", j+1)
+					datasetI[j].append(reflectionCoeff[1]*datasetI[j][i])
+					sumarray(datasetI[j],"Iref1", j+1)
+				else:
+					datasetV[j].append(datasetV[j+1][i+1]-a*datasetI[j+1][i+1])
+					sumarray(datasetV[j],"Vref1", j+1)
+					datasetI[j].append(datasetI[j+1][i+1]-b*datasetV[j+1][i+1])
+					sumarray(datasetI[j],"Iref1", j+1)
+		else:
+			for j in range(0, numberofnodes):
+				if(j==0):
+					datasetV[j].append(reflectionCoeff[2]*datasetV[j][i])
+					sumarray(datasetV[j],"Vref2", j+1)
+					datasetI[j].append(reflectionCoeff[2]*datasetI[j][i])
+					sumarray(datasetI[j],"Iref2", j+1)
+				else:
+					datasetV[j].append(datasetV[j-1][i+1]-a*datasetI[j-1][i+1])
+					sumarray(datasetV[j],"Vref2", j+1)
+					datasetI[j].append(datasetI[j-1][i+1]-b*datasetV[j-1][i+1])
+					sumarray(datasetI[j],"Iref2", j+1)
+
+	for i in range(0,numberofreflection+1):
+		if(i%2==0):
+			for j in range(0,len(datasetV)):
+				print("j:{}, i:{})   V:{}   \t I:{}".format(j,i,datasetV[j][i], datasetI[j][i]))
+		else:
+			for j in range(len(datasetV)-1,-1,-1):
+				print("j:{}, i:{})   V:{}   \t I:{}".format(j,i,datasetV[j][i], datasetI[j][i]))
+
+	completeDatasetV.append(datasetV)
+	completeDatasetI.append(datasetI)
+
+# for k in range(0,10):
+# 	print("\n Dataset:{}\n".format(k+1))
+# 	for i in range(0,numberofreflection+1):
+# 		if(i%2==0):
+# 			for j in range(0,len(completeDatasetV[k])):
+# 				print("j:{}, i:{})   V:{}   \t I:{}".format(j,i,completeDatasetV[k][j][i], completeDatasetI[k][j][i]))
+# 		else:
+# 			for j in range(len(completeDatasetV[k])-1,-1,-1):
+# 				print("j:{}, i:{})   V:{}   \t I:{}".format(j,i,completeDatasetV[k][j][i], completeDatasetI[k][j][i]))
 
 nodevalue=3
 Vs_at_t_0 = 220*math.cos(w*t*0)
@@ -126,11 +146,6 @@ print("Vplus:{}\nVminus:{}\nIplus:{}\nIminus:{}".format(Vplus,Vminus,Iplus,Iminu
 
 datasetV2=[]
 datasetI2=[]
-
-def drange(start,stop,step):
-	while start<stop:
-		yield start
-		start += step
 
 for k in drange(0, 1*t, t/10):
 	try:
