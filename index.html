@@ -75,6 +75,23 @@
           <input type="text" class="form-control" id="numberofcell" value="100" placeholder="100">
         </div>
         <div class="form-group bmargin">
+          <label for="nodevalue">Node Value:</label>
+          <input type="text" class="form-control" id="nodevalue" value="3" placeholder="3">
+        </div>
+
+        <div class="form-group bmargin">
+          <label for="starting">Starting Point:</label>
+          <input type="text" class="form-control" id="starting" value="0" placeholder="0">
+        </div>
+        <div class="form-group bmargin">
+          <label for="ending">Ending Point:</label>
+          <input type="text" class="form-control" id="ending" value="0.1" placeholder="0.1">
+        </div>
+        <div class="form-group bmargin" style="display: none">
+          <label for="step">Steps:</label>
+          <input type="text" class="form-control" id="step" value="0.1" placeholder="0.1">
+        </div>
+        <div class="form-group bmargin">
           <label>Select unit cell: </label>
           <label><input type="radio" name="optradio" value="1"><img style="width: 80%" src="img/unit_cell_1.png"></label><br>
         </div><br>
@@ -99,11 +116,21 @@
 					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
 					borderColor: window.chartColors.green,
 					fill: false,
+                    yAxisID: 'voltage',
+					data: [],
+				},{
+					label: 'Current',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					fill: false,
+                    yAxisID: 'current',
 					data: [],
 				}]
 			},
 			options: {
 				title: {
+				    display:true,
+                    fontSize:20,
 					text: 'Transmission Line'
 				},
 				scales: {
@@ -111,15 +138,26 @@
 						type: 'linear',
 						scaleLabel: {
 							display: true,
-							labelString: 'Distance(cm)'
+							labelString: 'Time(sec)'
 						}
 					}],
 					yAxes: [{
 						scaleLabel: {
 							display: true,
 							labelString: 'Voltage(V)'
-						}
-					}]
+						},
+						id:'voltage',
+                        type:'linear',
+                        position:'left',
+					},{
+					    scaleLabel: {
+							display: true,
+							labelString: 'Current(I)'
+						},
+						id:'current',
+                        type:'linear',
+                        position:'right',
+                    }]
 				},
 			}
 		};
