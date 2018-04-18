@@ -1,13 +1,13 @@
 // voltage datasets
-  voltage = [[],[],[],[],[]];
-  vplotdata = [[],[],[],[],[]];
+  completeDatasetV = [];
 // current datasets
-  current = [[],[],[],[],[]];
-  iplotdata = [[],[],[],[],[]];
+  completeDatasetI = [];
 
 //reflection and transmission coefficient
     ReflectionCoeff = [];
     TransmissionCoeff = [];
+
+sleeptime=2000;
 
 $(document).ready(function () {
 
@@ -17,10 +17,8 @@ $(document).ready(function () {
     for(var i=0; i<config.data.datasets.length;i++)
         config.data.datasets[i].data=[];
     window.myLine.update();
-    voltage = [[],[],[],[],[]];
-    current = [[],[],[],[],[]];
-    vplotdata = [[],[],[],[],[]];
-    iplotdata = [[],[],[],[],[]];
+    completeDatasetV = [];
+    completeDatasetI = [];
     ReflectionCoeff = [];
     TransmissionCoeff = [];
     var cook = {};
@@ -36,6 +34,7 @@ $(document).ready(function () {
     cook['ending point']=$('#ending').val();
     cook['step']=$('#step').val();
     cook['numberofcell']=$('#numberofcell').val();
+    cook['numberofreflection']=$('#numberofreflection').val();
     cook['unitcell']=document.querySelector('input[name="optradio"]:checked').value;
     console.log(cook, JSON.stringify(cook));
     document.cookie = "data="+JSON.stringify(cook)+";path:/;expires:";
@@ -70,6 +69,7 @@ $(document).ready(function () {
     var Zl = math.complex($('#loadImp').val());
     var Zs = math.complex($('#sourceImp').val());
     var numberofcell = math.eval($('#numberofcell').val());
+    var numberofreflection = math.eval($('#numberofreflection').val());
     // propagation constant, p
     // attenuation constant, a
     // phase constant, b
@@ -82,155 +82,128 @@ $(document).ready(function () {
     ReflectionCoeff.push(math.divide(math.subtract(Zo, Zs), math.add(Zo, Zs)));
     ReflectionCoeff.push(math.divide(math.subtract(Zl, Zo), math.add(Zl, Zo)));
     ReflectionCoeff.push(math.divide(math.subtract(Zs, Zo), math.add(Zs, Zo)));
-    TransmissionCoeff.push(math.divide(math.multiply(2, Zo), math.add(Zo, Zs)));
+    TransmissionCoeff.push(1);
     TransmissionCoeff.push(math.divide(math.multiply(2, Zl), math.add(Zl, Zo)));
     TransmissionCoeff.push(math.divide(math.multiply(2, Zs), math.add(Zs, Zo)));
-    var const_a = calculateTanh(math.multiply(p, numberofcell));
+    var const_a = calculateTanh(math.multiply(p, numberofcell+1));
     var Zin = math.multiply(Zo,math.divide(math.add(Zl, math.multiply(math.complex(0,1),Zo,const_a)),math.add(Zo, math.multiply(math.complex(0,1),Zl, const_a))));
     var TotalZ = math.add(Zs, Zin);
-    // createDataset(2*Math.PI/sourceV.w,numberofcell, sourceImp, TotalZ, sourceV);
-    plottimedependence(p, sourceImp,Zo,TotalZ,1/sourceV.f,sourceV.w);
+    createDataset(2*Math.PI/sourceV.w,numberofcell, sourceImp, TotalZ, sourceV);
+    //plottimedependence(p, sourceImp,Zo,TotalZ,1/sourceV.f,sourceV.w);
   });
 });
-function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
-    var scope = {"t":1.8*T};
-    var readcookie = document.cookie;
-    var cook = JSON.parse(readcookie.substring(5,readcookie.length));
-    var srcvol = math.parse(cook['sourceV'], scope);
-    var compilesrcvol = srcvol.compile();
-    var srcvolvalues = [];
-    srcvolvalues.push(compilesrcvol.eval(scope));
-    for(var i=0.2;i<1;i=i+0.2){
-      scope = {"t":i*T};
-      srcvolvalues.push(compilesrcvol.eval(scope));
-    };
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-    for(var i=0;i<5;i++){
-        var V1 = math.multiply(TransmissionCoeff[0], math.subtract(srcvolvalues[i],math.multiply(sourceImp, math.divide(srcvolvalues[i], TotalImp))));
-        var I1 = math.multiply(TransmissionCoeff[0], math.divide(srcvolvalues[i], TotalImp));
-        voltage[i].push([V1]);
-        current[i].push([I1]);
-        vplotdata[i].push(V1.re);
-        iplotdata[i].push(I1.re);
+function sumarray(arr){
+    var sum = 0;
+    for(var i=0;i<arr.length;i++){
+        sum += arr[i].re;
     }
+    return sum;
+}
+
+function addvaluetoplot(x1,y1,x2,y2) {
     config.data.datasets[0].data.push({
-                        x: 0,
-                        y: vplotdata[0][0],
+                        x: x1,
+                        y: y1,
                     });
     config.data.datasets[1].data.push({
-                        x: 0,
-                        y: iplotdata[0][0],
+                        x: x2,
+                        y: y2,
                     });
-
     window.myLine.update();
-    var intervalcounter =1;
-    var interval = setInterval(function () {
-      console.log("Hello");
-      intervalcounter++;
-      if(intervalcounter === numofcell){
-          clearinterval();
-      }
-      var r = math.eval(cook['resistance']);
-      var l = math.eval(cook['inductance']);
-      var c = math.eval(cook['capacitance']);
-      var g = math.eval(cook['conductance']);
-      var w = sourceVparsed.w;
-      var Z1 = math.multiply(-1,math.complex(r,w*l));
-      var Z2 = math.multiply(-1,math.complex(g,w*c));
+}
+function editvalueinplot(x1,y1,x2,y2){
+    config.data.datasets[0].data[x1]['y']=y1;
+    config.data.datasets[1].data[x2]['y']=y2;
+    window.myLine.update();
+}
 
-      for(var i=0;i<5;i++){
-          var Vn = voltage[i][voltage[i].length-1][0];
-          var In = current[i][current[i].length-1][0];
+function clearplot(){
+    for(var i=0; i<config.data.datasets.length;i++)
+        config.data.datasets[i].data=[];
+    window.myLine.update();
+}
 
-          var Vn__plus_1 = math.add(Vn, math.multiply(In, Z1));
-          var In__plus_1 = math.add(In, math.multiply(Vn, Z2));
-          voltage[i].push([Vn__plus_1]);
-          current[i].push([In__plus_1]);
-          vplotdata[i].push(Vn__plus_1.re);
-          iplotdata[i].push(In__plus_1.re);
-      }
-
-      config.data.datasets[0].data.push({
-                        x: intervalcounter-1,
-                        y: vplotdata[0][intervalcounter-1],
-                    });
-      config.data.datasets[1].data.push({
-                        x: intervalcounter-1,
-                        y: iplotdata[0][intervalcounter-1],
-                    });
-
-
-      window.myLine.update();
-    },5000/numofcell);
-
-    function clearinterval() {
-        clearInterval(interval);
-        goReverse(1);
-    }
-    function goReverse(number) {
-        for(var i=0;i<5;i++){
-            var Vl = voltage[i][voltage[i].length-1][number-1];
-            var Il = current[i][current[i].length-1][number-1];
-            var reflecV = math.multiply(Vl, ReflectionCoeff[1]);
-            var reflecI = math.multiply(Il, ReflectionCoeff[1]);
-            voltage[i][voltage[i].length-1].push(reflecV);
-            current[i][current[i].length-1].push(reflecI);
+async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
+    var numberofdatasets=10;
+    var readcookie = document.cookie;
+    var cook = JSON.parse(readcookie.substring(5,readcookie.length));
+    var numberofnodes = math.eval(cook['numberofcell'])+1;
+    var r = math.eval(cook['resistance']);
+    var l = math.eval(cook['inductance']);
+    var c = math.eval(cook['capacitance']);
+    var g = math.eval(cook['conductance']);
+    var numberofreflection = math.eval(cook['numberofreflection']);
+    var w = sourceVparsed.w;
+    var Z1 = math.complex(r,w*l);
+    var Z2 = math.complex(g,w*c);
+    for(var factor=0;factor<numberofdatasets;factor++){
+        clearplot();
+        var datasetV=[];
+        var datasetI=[];
+        // console.log(factor/numberofdatasets);
+        var scope = {"t":factor*T/numberofdatasets};
+        var srcvol = math.parse(cook['sourceV'], scope);
+        var compilesrcvol = srcvol.compile();
+        var Vs = compilesrcvol.eval(scope);
+        var Is = math.divide(Vs,TotalImp);
+        console.log(Vs, Is);
+        datasetV.push([math.subtract(Vs,math.multiply(Is,sourceImp))]);
+        datasetI.push([Is]);
+        console.log("Node 0 (V):"+datasetV[0][0].re, "Node 0 (I):"+datasetI[0][0].re);
+        addvaluetoplot(0,datasetV[0][0].re,0, datasetI[0][0].re);
+        // console.log(sumarray(datasetI[0]));
+        for(var node=1;node<numberofnodes;node++){
+            var Vn=datasetV[node-1][0];
+            var In=datasetI[node-1][0];
+            var Vn_plus_1 = math.subtract(Vn,math.multiply(Z1,In));
+            var In_plus_1 = math.subtract(In,math.multiply(Z2,Vn));
+            datasetV.push([Vn_plus_1]);
+            datasetI.push([In_plus_1]);
+            addvaluetoplot(node,Vn_plus_1.re,node,In_plus_1.re);
+            console.log("Node "+node+" (V):"+Vn_plus_1.re, "Node "+node+" (I):"+In_plus_1.re);
+            await sleep(sleeptime);
+            // console.log(sumarray(datasetI[node]));
         }
-        var tempV=math.complex(0,0),tempI=math.complex(0,0);
-        for(var i=0;i<voltage[0][voltage[0].length-1].length-1;i++){
-            tempV=math.add(voltage[0][voltage[0].length-1][i],tempV);
-            tempI=math.add(current[0][current[0].length-1][i],tempI)
+        for(var reflect=0;reflect<numberofreflection;reflect++){
+            if((reflect%2)===0){
+                for(var j=numberofnodes-1;j>=0;j--){
+                    if(j==numberofnodes-1){
+                        datasetV[j].push(math.multiply(ReflectionCoeff[1],datasetV[j][reflect]));
+                        datasetI[j].push(math.multiply(ReflectionCoeff[1],datasetI[j][reflect]));
+                    }
+                    else{
+                        datasetV[j].push(math.subtract(datasetV[j+1][reflect+1],math.multiply(Z1,datasetI[j+1][reflect+1])));
+                        datasetI[j].push(math.subtract(datasetI[j+1][reflect+1],math.multiply(Z2,datasetV[j+1][reflect+1])));
+                    }
+                    editvalueinplot(j,sumarray(datasetV[j]),j,sumarray(datasetI[j]));
+                    console.log("Node "+j+" (V):"+datasetV[j][reflect+1].re, "Node "+j+" (I):"+datasetI[j][reflect+1]);
+                    await sleep(sleeptime);
+                }
+            }
+            else{
+                for(var j=0;j<numberofnodes;j++){
+                    if(j==0){
+                        datasetV[j].push(math.multiply(ReflectionCoeff[2],datasetV[j][reflect]));
+                        datasetI[j].push(math.multiply(ReflectionCoeff[2],datasetI[j][reflect]));
+                    }
+                    else{
+                        datasetV[j].push(math.subtract(datasetV[j-1][reflect+1],math.multiply(Z1,datasetI[j-1][reflect+1])));
+                        datasetI[j].push(math.subtract(datasetI[j-1][reflect+1],math.multiply(Z2,datasetV[j-1][reflect+1])));
+                    }
+                    editvalueinplot(j,sumarray(datasetV[j]),j,sumarray(datasetI[j]));
+                    console.log("Node "+j+" (V):"+datasetV[j][reflect+1].re, "Node "+j+" (I):"+datasetI[j][reflect+1]);
+                    await sleep(sleeptime);
+                }
+            }
         }
-        config.data.datasets[0].data[voltage[0][voltage[0].length-1]]={
-                        x: voltage[0][voltage[0].length]-1,
-                        y: tempV.re,
-                    };
-        config.data.datasets[1].data[current[0][current[0].length-1]]={
-                        x: current[0][current[0].length]-1,
-                        y: tempI.re,
-                    };
-        window.myLine.update();
-
-        var revintervalcounter = numofcell-2;
-        var revinterval = setInterval(function () {
-            var r = math.eval(cook['resistance']);
-            var l = math.eval(cook['inductance']);
-            var c = math.eval(cook['capacitance']);
-            var g = math.eval(cook['conductance']);
-            var w = sourceVparsed.w;
-            var Z1 = math.multiply(-1,math.complex(r,w*l));
-            var Z2 = math.multiply(-1,math.complex(g,w*c));
-            for(var i=0;i<5;i++) {
-                var Vn = voltage[i][revintervalcounter - 1][number];
-                var In = current[i][revintervalcounter - 1][number];
-                var Vn__minus_1 = math.add(Vn, math.multiply(In, Z1));
-                var In__minus_1 = math.add(In, math.multiply(Vn, Z2));
-                voltage[i][revintervalcounter-1].push(Vn__minus_1);
-                current[i][revintervalcounter-1].push(In__minus_1);
-            }
-
-            tempV=math.complex(0,0);tempI=math.complex(0,0);
-            for(var i=0;i<voltage[0][revintervalcounter-1].length-1;i++){
-                tempV=math.add(voltage[0][revintervalcounter-1][i],tempV);
-                tempI=math.add(current[0][revintervalcounter-1][i],tempI)
-            }
-
-            config.data.datasets[0].data[revintervalcounter-1]={
-                        x: revintervalcounter,
-                        y: tempV.re,
-                    };
-            config.data.datasets[1].data[revintervalcounter-1]={
-                            x: revintervalcounter,
-                            y: tempI.re,
-                        };
-            window.myLine.update();
-
-
-            revintervalcounter--;
-            if(revintervalcounter<=0){
-                clearInterval(revinterval);
-            }
-        },5000/numofcell);
+        // console.log(datasetV, datasetI);
+        completeDatasetV.push(datasetV);
+        completeDatasetI.push(datasetI);
+        await sleep(5000);
     }
   }
 function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){

@@ -42,7 +42,7 @@ print("alpha={}\tbeta={}\tgamma={}".format(alpha,beta,gamma));
 
 transmissionCoeff=[]
 reflectionCoeff=[]
-transmissionCoeff.append(2*Z0/(Zs+Z0))
+transmissionCoeff.append(1)
 transmissionCoeff.append(2*Zl/(Z0+Zl))
 transmissionCoeff.append(2*Zs/(Z0+Zs))
 reflectionCoeff.append((Z0-Zs)/(Z0+Zs))
