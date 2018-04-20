@@ -24,8 +24,8 @@ async function startnew(){
     ReflectionCoeff = [];
     TransmissionCoeff = [];
     // sleeptime=1000/math.eval($('#numberofvaluestoplot').val());
-    var readcookie = document.cookie;
-    var cook = JSON.parse(readcookie.substring(5,readcookie.length));
+    var readcookie = document.cookie.split(';')
+    var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
     console.log(cook);
     var sourceV = {"amp":"", "w":"", "f":"", "name":""};
     var Volt = math.parse(cook['sourceV']);
@@ -129,8 +129,8 @@ function clearplot2(){
 
 async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
     var numberofdatasets=10;
-    var readcookie = document.cookie;
-    var cook = JSON.parse(readcookie.substring(5,readcookie.length));
+    var readcookie = document.cookie.split(';');
+    var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
     var numberofnodes = math.eval(cook['numberofcell'])+1;
     var r = math.eval(cook['resistance']);
     var l = math.eval(cook['inductance']);
@@ -210,8 +210,8 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
   }
 function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
     var scope = {"t":0};
-    var readcookie = document.cookie;
-    var cook = JSON.parse(readcookie.substring(5,readcookie.length));
+    var readcookie = document.cookie.split(';');
+    var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
     var srcvol = math.parse(cook['sourceV'], scope);
     var nodevalue = math.eval(cook['nodevalue']);
     var start = math.eval(cook['starting point']);
