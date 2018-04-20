@@ -1,208 +1,185 @@
 <!DOCTYPE html>
-<!-- saved from url=(0059)http://www.chartjs.org/samples/latest/scales/time/line.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Line Chart</title>
-	<script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/math.min.js"></script>
+  <script src="js/definations.js"></script>
+  <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
 	<script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
 @-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
 	<script src="js/chartjs/utils.js"></script>
-	<style>
-    canvas {
+</head>
+<style>
+  .bmargin{
+    margin-bottom: 10px !important;
+  }
+  img{
+    width: 100%;
+  }
+  .img-bg{
+    /*background: lightgrey;*/
+    border-radius: 5px;
+    padding-bottom: 20px;
+  }
+  .tline{
+    margin-bottom:10px;
+  }
+  canvas {
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
     }
-	</style>
-</head>
-
+  #collectVariables{
+    padding: 10px;
+  }
+  body{
+    min-width: 728px;
+  }
+</style>
 <body>
-	<div style="width:75%;"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
-		<canvas id="canvas" style="display: block; width: 973px; height: 486px;" width="973" height="486" class="chartjs-render-monitor"></canvas>
+<div class="container">
+  <div class="container-fluid">
+    <div class="hide"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+		<canvas id="canvas" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
 	</div>
-	<br>
-	<br>
-	<button id="randomizeData">Randomize Data</button>
-	<button id="addDataset">Add Dataset</button>
-	<button id="removeDataset">Remove Dataset</button>
-	<button id="addData">Add Data</button>
-	<button id="removeData">Remove Data</button>
-	<script>
-		var timeFormat = 'MM/DD/YYYY HH:mm';
-
-		function newDate(days) {
-			return moment().add(days, 'd').toDate();
-		}
-
-		function newDateString(days) {
-			return moment().add(days, 'd').format(timeFormat);
-		}
-
-		function newTimestamp(days) {
-			return moment().add(days, 'd').unix();
-		}
-
-		var color = Chart.helpers.color;
+    <div class="hide"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+		<canvas id="canvas2" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
+	</div>
+  </div>
+</div>
+<script>
+  		var color = Chart.helpers.color;
 		var config = {
 			type: 'line',
 			data: {
-				labels: [ // Date Objects
-					newDate(0),
-					newDate(1),
-					newDate(2),
-					newDate(3),
-					newDate(4),
-					newDate(5),
-					newDate(6)
-				],
 				datasets: [{
-					label: "My First dataset",
-					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.red,
-					fill: false,
-					data: [
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor()
-					],
-				}, {
-					label: "My Second dataset",
-					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.blue,
-					fill: false,
-					data: [
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor()
-					],
-				}, {
-					label: "Dataset with point data",
+					label: 'Voltage',
 					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
 					borderColor: window.chartColors.green,
 					fill: false,
-					data: [{
-						x: newDateString(0),
-						y: randomScalingFactor()
-					}, {
-						x: newDateString(5),
-						y: randomScalingFactor()
-					}, {
-						x: newDateString(7),
-						y: randomScalingFactor()
-					}, {
-						x: newDateString(15),
-						y: randomScalingFactor()
-					}],
+                    yAxisID: 'voltage',
+					data: [],
+				},{
+					label: 'Current',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					fill: false,
+                    yAxisID: 'current',
+					data: [],
 				}]
 			},
 			options: {
-                title:{
-                    text: "Chart.js Time Scale"
-                },
+				title: {
+				    display:true,
+                    fontSize:20,
+					text: 'Transmission Line'
+				},
 				scales: {
 					xAxes: [{
-						type: "time",
-						time: {
-							format: timeFormat,
-							// round: 'day'
-							tooltipFormat: 'll HH:mm'
-						},
+						type: 'linear',
 						scaleLabel: {
 							display: true,
-							labelString: 'Date'
+							labelString: 'Distance(cm)'
 						}
-					}, ],
+					}],
 					yAxes: [{
 						scaleLabel: {
 							display: true,
-							labelString: 'value'
+							labelString: 'Voltage(V)'
+						},
+						id:'voltage',
+                        type:'linear',
+                        position:'left',
+					},{
+					    scaleLabel: {
+							display: true,
+							labelString: 'Current(I)'
+						},
+						id:'current',
+                        type:'linear',
+                        position:'right',
+                    }]
+				},
+			}
+		};
+		var config2 = {
+			type: 'line',
+			data: {
+				datasets: [{
+					label: 'Voltage',
+					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.green,
+					fill: false,
+                    yAxisID: 'voltage',
+					data: [],
+				},{
+					label: 'Current',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					fill: false,
+                    yAxisID: 'current',
+					data: [],
+				}]
+			},
+			options: {
+				title: {
+				    display:true,
+                    fontSize:20,
+					text: 'Transmission Line'
+				},
+				scales: {
+					xAxes: [{
+						type: 'linear',
+						scaleLabel: {
+							display: true,
+							labelString: 'Time(sec)'
 						}
-					}]
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Voltage(V)'
+						},
+						id:'voltage',
+                        type:'linear',
+                        position:'left',
+					},{
+					    scaleLabel: {
+							display: true,
+							labelString: 'Current(I)'
+						},
+						id:'current',
+                        type:'linear',
+                        position:'right',
+                    }]
 				},
 			}
 		};
 
 		window.onload = function() {
-			var ctx = document.getElementById("canvas").getContext("2d");
+			var ctx = document.getElementById('canvas').getContext('2d');
+			var ctx2 = document.getElementById('canvas2').getContext('2d');
 			window.myLine = new Chart(ctx, config);
-
+			window.myLine2 = new Chart(ctx2, config2);
 		};
-
-		document.getElementById('randomizeData').addEventListener('click', function() {
-			config.data.datasets.forEach(function(dataset) {
-				dataset.data.forEach(function(dataObj, j) {
-					if (typeof dataObj === 'object') {
-						dataObj.y = randomScalingFactor();
-					} else {
-						dataset.data[j] = randomScalingFactor();
-					}
-				});
-			});
-
-			window.myLine.update();
-		});
-
-		var colorNames = Object.keys(window.chartColors);
-		document.getElementById('addDataset').addEventListener('click', function() {
-			var colorName = colorNames[config.data.datasets.length % colorNames.length];
-			var newColor = window.chartColors[colorName]
-			var newDataset = {
-				label: 'Dataset ' + config.data.datasets.length,
-				borderColor: newColor,
-				backgroundColor: color(newColor).alpha(0.5).rgbString(),
-				data: [],
-			};
-
-			for (var index = 0; index < config.data.labels.length; ++index) {
-				newDataset.data.push(randomScalingFactor());
-			}
-
-			config.data.datasets.push(newDataset);
-			window.myLine.update();
-		});
-
-		document.getElementById('addData').addEventListener('click', function() {
-			if (config.data.datasets.length > 0) {
-				config.data.labels.push(newDate(config.data.labels.length));
-
-				for (var index = 0; index < config.data.datasets.length; ++index) {
-					if (typeof config.data.datasets[index].data[0] === "object") {
-						config.data.datasets[index].data.push({
-							x: newDate(config.data.datasets[index].data.length),
-							y: randomScalingFactor(),
-						});
-					} else {
-						config.data.datasets[index].data.push(randomScalingFactor());
-					}
-				}
-
-				window.myLine.update();
-			}
-		});
-
-		document.getElementById('removeDataset').addEventListener('click', function() {
-			config.data.datasets.splice(0, 1);
-			window.myLine.update();
-		});
-
-		document.getElementById('removeData').addEventListener('click', function() {
-			config.data.labels.splice(-1, 1); // remove the label first
-
-			config.data.datasets.forEach(function(dataset, datasetIndex) {
-				dataset.data.pop();
-			});
-
-			window.myLine.update();
-		});
+		var readcook = document.cookie;
+    	var parsecook = JSON.parse(readcook.substring(5,readcook.length));
+    	if(parsecook['runningmode']=="distance")
+		{
+		    $('#canvas').parent().removeClass('hide');
+		}
+		else if(parsecook['runningmode']=="time")
+		{
+		    $('#canvas2').parent().removeClass('hide');
+		}
+		else if(parsecook['runningmode']=="both")
+		{
+		    $('#canvas').parent().removeClass('hide');
+		    $('#canvas2').parent().removeClass('hide');
+		}
+		startnew();
 	</script>
-
-
-
-</body></html>
+</body>
+</html>
