@@ -7,20 +7,55 @@
     ReflectionCoeff = [];
     TransmissionCoeff = [];
 
-sleeptime=2000;
+sleeptime=100;
 
 $(document).ready(function () {
-
+  $('input[name="runningmode"]').click(function(){
+      var runningmodevalue=document.querySelector('input[name="runningmode"]:checked').value;
+      if(runningmodevalue=="distance"){
+          $('#numberofreflection').parent().removeClass('hide');
+          $('#nodevalue').parent().addClass('hide');
+          $('#starting').parent().addClass('hide');
+          $('#ending').parent().addClass('hide');
+          $('#step').parent().addClass('hide');
+          $('#canvas').parent().removeClass('hide');
+          $('#canvas2').parent().addClass('hide');
+      }
+      else if(runningmodevalue=="time"){
+          $('#numberofreflection').parent().addClass('hide');
+          $('#nodevalue').parent().removeClass('hide');
+          $('#starting').parent().removeClass('hide');
+          $('#ending').parent().removeClass('hide');
+          $('#step').parent().removeClass('hide');
+          $('#canvas').parent().addClass('hide');
+          $('#canvas2').parent().removeClass('hide');
+      }
+      else if(runningmodevalue=="both"){
+          $('#numberofreflection').parent().removeClass('hide');
+          $('#nodevalue').parent().removeClass('hide');
+          $('#starting').parent().removeClass('hide');
+          $('#ending').parent().removeClass('hide');
+          $('#step').parent().removeClass('hide');
+          $('#canvas').parent().removeClass('hide');
+          $('#canvas2').parent().removeClass('hide');
+      }
+	console.log("radio clicked");
+	console.log("value is:"+document.querySelector('input[name="runningmode"]:checked').value);
+  });
   // var element = document.getElementsByTagName('form');
   $('#collectVariables').submit(function(event){
     event.preventDefault();
     for(var i=0; i<config.data.datasets.length;i++)
         config.data.datasets[i].data=[];
     window.myLine.update();
+    for(var i=0; i<config2.data.datasets.length;i++)
+        config2.data.datasets[i].data=[];
+    window.myLine2.update();
     completeDatasetV = [];
     completeDatasetI = [];
     ReflectionCoeff = [];
     TransmissionCoeff = [];
+    sleeptime=1000/math.eval($('#numberofvaluestoplot').val());
     var cook = {};
     cook['sourceV']=$('#ivoltage').val();
     cook['sourceImp']=$('#sourceImp').val();
@@ -36,6 +71,8 @@ $(document).ready(function () {
     cook['numberofcell']=$('#numberofcell').val();
     cook['numberofreflection']=$('#numberofreflection').val();
     cook['unitcell']=document.querySelector('input[name="optradio"]:checked').value;
+    cook['runningmode']=document.querySelector('input[name="runningmode"]:checked').value;
+    cook['numberofvaluestoplot']=$('#numberofvaluestoplot').val();
     console.log(cook, JSON.stringify(cook));
     document.cookie = "data="+JSON.stringify(cook)+";path:/;expires:";
     var sourceV = {"amp":"", "w":"", "f":"", "name":""};
@@ -88,8 +125,17 @@ $(document).ready(function () {
     var const_a = calculateTanh(math.multiply(p, numberofcell+1));
     var Zin = math.multiply(Zo,math.divide(math.add(Zl, math.multiply(math.complex(0,1),Zo,const_a)),math.add(Zo, math.multiply(math.complex(0,1),Zl, const_a))));
     var TotalZ = math.add(Zs, Zin);
-    createDataset(2*Math.PI/sourceV.w,numberofcell, sourceImp, TotalZ, sourceV);
-    //plottimedependence(p, sourceImp,Zo,TotalZ,1/sourceV.f,sourceV.w);
+    window.location.hash="canvas";
+    if(cook['runningmode']=="distance"){
+        createDataset(2*Math.PI/sourceV.w,numberofcell, sourceImp, TotalZ, sourceV);
+    }
+    else if(cook['runningmode']=="time"){
+        plottimedependence(p, sourceImp,Zo,TotalZ,1/sourceV.f,sourceV.w);
+    }
+    else if(cook['runningmode']=="both"){
+        createDataset(2*Math.PI/sourceV.w,numberofcell, sourceImp, TotalZ, sourceV);
+        plottimedependence(p, sourceImp,Zo,TotalZ,1/sourceV.f,sourceV.w);
+    }
   });
 });
 function sleep(ms) {
@@ -120,7 +166,6 @@ function editvalueinplot(x1,y1,x2,y2){
     config.data.datasets[1].data[x2]['y']=y2;
     window.myLine.update();
 }
-
 function clearplot(){
     for(var i=0; i<config.data.datasets.length;i++)
         config.data.datasets[i].data=[];
@@ -141,6 +186,8 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
     var Z1 = math.complex(r,w*l);
     var Z2 = math.complex(g,w*c);
     for(var factor=0;factor<numberofdatasets;factor++){
+        config.options.title.text="Transmission Line @ t=Time Period * "+factor/numberofdatasets;
+        window.myLine.update();
         clearplot();
         var datasetV=[];
         var datasetI=[];
@@ -234,16 +281,16 @@ function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
         console.log("v:"+v.re,"i="+i.re);
         datasetV.push(v);
         datasetI.push(i);
-        config.data.datasets[0].data.push({
+        config2.data.datasets[0].data.push({
             x: t,
             y: v.re
         });
-        config.data.datasets[1].data.push({
+        config2.data.datasets[1].data.push({
             x: t,
             y: i.re
         });
-        window.myLine.update();
-        t+=step*T;
+        window.myLine2.update();
+        t+=step;
         if(t>stop){
           clearInterval(mytimer);
         }

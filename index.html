@@ -18,6 +18,11 @@
   img{
     width: 100%;
   }
+  .img-bg{
+    /*background: lightgrey;*/
+    border-radius: 5px;
+    padding-bottom: 20px;
+  }
   .tline{
     margin-bottom:10px;
   }
@@ -36,74 +41,89 @@
 <body>
 <div class="container">
   <div class="container-fluid">
-    <div class="col-sm-12 col-md-6 tline">
-      <h3>Transmission Line:</h3>
-      <img src="img/transmission_line.png">
-    </div>
-    <div class="col-sm-12 col-md-6">
-      <form id="collectVariables" class="form-inline">
-        <div class="form-group bmargin">
+    <div class="col-md-12">
+      <form id="collectVariables" class="form-group">
+        <div class="tline col-sm-12 col-md-6 img-bg">
+          <label>Transmission Line:</label>
+          <img src="img/transmission_line.png">
+        </div>
+        <div class="form-group bmargin tline col-md-6 col-sm-12 img-bg">
+          <label>Select unit cell: </label>
+          <label><input type="radio" name="optradio" checked="checked" value="1"><img style="width: 95%" src="img/unit_cell_1.png"></label><br>
+        </div>
+        <div class="form-group bmargin col-md-6">
           <label for="ivoltage">Initial Voltage, V<sub>s</sub> (in volts):</label>
           <input type="text" class="form-control" id="ivoltage" value="220 cos(314t)" placeholder="220 cos(314t)">
         </div>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6">
           <label for="sourceImp">Source Impedance, Z<sub>s</sub>:</label>
           <input type="text" class="form-control" id="sourceImp" value="2" placeholder="2">
         </div>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6">
           <label for="loadImp">Load Impedance, Z<sub>L</sub>:</label>
           <input type="text" class="form-control" id="loadImp" value="100" placeholder="100">
         </div>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6">
           <label for="rvalue">Resistor value, R (in ohm/cm):</label>
           <input type="text" class="form-control" id="rvalue" value="0" placeholder="0">
         </div>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6">
           <label for="lvalue">Inductor value, L (in Henry/cm):</label>
           <input type="text" class="form-control" id="lvalue" value="0.5 * 10^(-6)" placeholder="0.5 * 10^(-6)">
         </div>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6">
           <label for="cvalue">Capacitor value, C (in Farad/cm):</label>
           <input type="text" class="form-control" id="cvalue" value="5 * 10^(-12)" placeholder="5 * 10^(-12)">
         </div>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6">
           <label for="gvalue">Conductance value, G (in mho/cm):</label>
           <input type="text" class="form-control" id="gvalue" value="0" placeholder="0">
         </div><br>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6">
           <label for="numberofcell">Number of unit cell:</label>
           <input type="text" class="form-control" id="numberofcell" value="100" placeholder="100">
         </div>
-        <div class="form-group bmargin">
+        <div class="col-md-6">
+          <label>Select running mode: </label><br>
+          <label class="radio-inline"><input type="radio" name="runningmode" checked="checked" value="distance">Distance Space</label>
+          <label class="radio-inline"><input type="radio" name="runningmode" value="time">Time Space</label>
+          <label class="radio-inline"><input type="radio" name="runningmode" value="both">Both</label>
+        </div>
+
+        <div class="form-group bmargin col-md-6">
           <label for="numberofreflection">Number of reflection:</label>
           <input type="text" class="form-control" id="numberofreflection" value="2" placeholder="2">
         </div>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6 hide">
           <label for="nodevalue">Node Value:</label>
           <input type="text" class="form-control" id="nodevalue" value="3" placeholder="3">
         </div>
-
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6 hide">
           <label for="starting">Starting Point:</label>
           <input type="text" class="form-control" id="starting" value="0" placeholder="0">
         </div>
-        <div class="form-group bmargin">
+        <div class="form-group bmargin col-md-6 hide">
           <label for="ending">Ending Point:</label>
           <input type="text" class="form-control" id="ending" value="0.1" placeholder="0.1">
         </div>
-        <div class="form-group bmargin" style="display: none">
-          <label for="step">Steps:</label>
-          <input type="text" class="form-control" id="step" value="0.1" placeholder="0.1">
+        <div class="form-group bmargin col-md-6 hide">
+          <label for="step">Steps(in sec):</label>
+          <input type="text" class="form-control" id="step" value="0.002" placeholder="0.002">
         </div>
-        <div class="form-group bmargin">
-          <label>Select unit cell: </label>
-          <label><input type="radio" name="optradio" value="1"><img style="width: 80%" src="img/unit_cell_1.png"></label><br>
-        </div><br>
-        <button type="submit" id="setCookie" class="btn btn-default bmargin">Generate Graph</button>
+        <div class="form-group bmargin col-md-6" style="display: none">
+          <label for="numberofvaluestoplot">Number of values to plot in 1 sec (Max. 100):</label>
+          <input type="text" class="form-control" id="numberofvaluestoplot" value="10" placeholder="10">
+        </div>
+        <div class="col-sm-12" style="text-align: center;">
+          <button type="submit" id="setCookie" class="btn btn-default bmargin" style="font-size: 18px;">Generate Graph</button>
+        </div>
       </form>
     </div>
     <div><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
 		<canvas id="canvas" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
+	</div>
+    <div class="hide"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+		<canvas id="canvas2" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
 	</div>
   </div>
 </div>
@@ -113,6 +133,59 @@
   });
 		var color = Chart.helpers.color;
 		var config = {
+			type: 'line',
+			data: {
+				datasets: [{
+					label: 'Voltage',
+					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.green,
+					fill: false,
+                    yAxisID: 'voltage',
+					data: [],
+				},{
+					label: 'Current',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					fill: false,
+                    yAxisID: 'current',
+					data: [],
+				}]
+			},
+			options: {
+				title: {
+				    display:true,
+                    fontSize:20,
+					text: 'Transmission Line'
+				},
+				scales: {
+					xAxes: [{
+						type: 'linear',
+						scaleLabel: {
+							display: true,
+							labelString: 'Distance(cm)'
+						}
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Voltage(V)'
+						},
+						id:'voltage',
+                        type:'linear',
+                        position:'left',
+					},{
+					    scaleLabel: {
+							display: true,
+							labelString: 'Current(I)'
+						},
+						id:'current',
+                        type:'linear',
+                        position:'right',
+                    }]
+				},
+			}
+		};
+		var config2 = {
 			type: 'line',
 			data: {
 				datasets: [{
@@ -168,8 +241,9 @@
 
 		window.onload = function() {
 			var ctx = document.getElementById('canvas').getContext('2d');
+			var ctx2 = document.getElementById('canvas2').getContext('2d');
 			window.myLine = new Chart(ctx, config);
-
+			window.myLine2 = new Chart(ctx2, config2);
 		};
 	</script>
 </body>
