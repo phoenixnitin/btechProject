@@ -29,10 +29,19 @@
     }
   #collectVariables{
     padding: 10px;
-      margin-top: 80px;
+    margin-top: 80px;
+  }
+  @media (min-width: 992px) {
+    #collectVariables {
+      margin-top: 0;
+    }
   }
   #collectVariables >  div{
       margin:10px 0;
+  }
+  #collectVariables > div:first-child > label, #collectVariables > div:nth-child(2) > label{
+    color: black;
+    text-decoration: underline;
   }
   @media (min-width: 992px){
     #collectVariables > div{
@@ -47,19 +56,19 @@
       font-size: 16px;
   }
     .inside-container{
-        background: rgba(0,0,0,0.6);
+        background: rgba(0,0,0,0.9);
         color: white;
         border-radius: 5px;
         box-shadow: 0px 0px 10px #000;
     }
     .img-bg{
-        background-color: rgba(255,255,255,0.3);
+        background-color: #dfa66b;
     }
     input.form-control{
         font-size: 18px;
-        color: #ffdab1;
-        background-color: #727d8b;
-        border: 1px solid #000;
+        color: #000;
+        background-color: #dfa66b;
+        border: none;
     }
     .button1{
         display: inline-block;
@@ -70,7 +79,7 @@
         text-decoration: none;
         outline: none;
         color: #fff;
-        background-color: #000;
+        background: linear-gradient(rgba(255, 255, 255, 0.4),#ffffff3b);
         border: none;
         border-radius: 15px;
         box-shadow: 8px 8px 4px rgba(0, 0, 0, 0.2);
@@ -166,13 +175,22 @@
 </div>
 <script>
   $(document).ready(function () {
-      if($('body').height()<$(document).height()){
-          $('body').height($(document).height());
+      function set_height(){
+        if($('body').height()<$(document).height()){
+            $('body').height($(document).height());
+        }
+        if($(document).width()>992){
+            $('#collectVariables > div:first-child').height($('#collectVariables > div:nth-child(2)').height());
+        }
+        else{
+            var heightlabel = $('#collectVariables > div:first-child > label').height();
+            var heightimg = $('#collectVariables > div:first-child > img').height();
+            $('#collectVariables > div:first-child').height(heightlabel+heightimg);
+          }
       }
+      set_height();
       $(window).resize(function () {
-          if($('body').height()<$(document).height()){
-          $('body').height($(document).height());
-      }
+          set_height();
       });
     $('input[name="runningmode"]').click(function(){
         var runningmodevalue=document.querySelector('input[name="runningmode"]:checked').value;
