@@ -5,6 +5,7 @@
   <script src="js/jquery-3.2.1.min.js"></script>
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <script src="js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="fonts/muli/muli.css">
 </head>
 <style>
   .bmargin{
@@ -28,16 +29,62 @@
     }
   #collectVariables{
     padding: 10px;
+      margin-top: 80px;
+  }
+  #collectVariables >  div{
+      margin:10px 0;
+  }
+  @media (min-width: 992px){
+    #collectVariables > div{
+        width: 46%;
+        margin:10px 2%;
+    }
   }
   body{
     min-width: 728px;
-    background-color: rgba(36, 147, 245, 0.45);
+    background: linear-gradient(rgb(101, 175, 247),rgba(255, 119, 2, 0.529));
+      font-family: Muli;
+      font-size: 16px;
   }
+    .inside-container{
+        background: rgba(0,0,0,0.6);
+        color: white;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px #000;
+    }
+    .img-bg{
+        background-color: rgba(255,255,255,0.3);
+    }
+    input.form-control{
+        font-size: 18px;
+        color: #ffdab1;
+        background-color: #727d8b;
+        border: 1px solid #000;
+    }
+    .button1{
+        display: inline-block;
+        padding: 10px 25px;
+        font-size: 24px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        color: #fff;
+        background-color: #000;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 8px 8px 4px rgba(0, 0, 0, 0.2);
+    }
+    .button1:hover {
+        background-color: #F05826;
+    }
+
 </style>
 <body>
 <div class="container">
   <div class="container-fluid">
-    <div class="col-md-12">
+      <h1 class="col-xs-12" style="font-family: Palatino Linotype; text-align: center; text-decoration: underline">Transmission Line Simulation</h1>
+    <div class="col-md-12 inside-container">
       <form id="collectVariables" class="form-group">
         <div class="tline col-sm-12 col-md-6 img-bg">
           <label>Transmission Line:</label>
@@ -110,8 +157,8 @@
           <label for="numberofvaluestoplot">Number of values to plot in 1 sec (Max. 100):</label>
           <input type="text" class="form-control" id="numberofvaluestoplot" value="10" placeholder="10">
         </div>
-        <div class="col-sm-12" style="text-align: center;">
-          <button type="submit" id="setCookie" class="btn btn-default bmargin" style="font-size: 18px;">Generate Graph</button>
+        <div style="text-align: center;width: 96%;">
+          <button type="submit" id="setCookie" class="button1" style="font-size: 18px; margin-top: 10px">Generate Graph</button>
         </div>
       </form>
     </div>
@@ -119,6 +166,14 @@
 </div>
 <script>
   $(document).ready(function () {
+      if($('body').height()<$(document).height()){
+          $('body').height($(document).height());
+      }
+      $(window).resize(function () {
+          if($('body').height()<$(document).height()){
+          $('body').height($(document).height());
+      }
+      });
     $('input[name="runningmode"]').click(function(){
         var runningmodevalue=document.querySelector('input[name="runningmode"]:checked').value;
         if(runningmodevalue=="distance"){
