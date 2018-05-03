@@ -48,22 +48,27 @@
 <body>
 <div class="container">
   <div class="container-fluid">
-    <div class="hide graphcss"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
-		<canvas id="canvas" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
+    <div class="hide graphcss">
+        <div id="data1"></div>
+        <canvas id="canvas" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
-    <div class="hide graphcss"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
-		<canvas id="canvasIm" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
+    <div class="hide graphcss">
+        <div id="data2"></div>
+		<canvas id="canvasIm" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
-    <div class="hide graphcss"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
-		<canvas id="canvas2" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
+    <div class="hide graphcss">
+        <div id="data3"></div>
+		<canvas id="canvas2" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
-    <div class="hide graphcss"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
-		<canvas id="canvas2Im" style="display: block; width: 100%; height: 728px;" class="chartjs-render-monitor"></canvas>
+    <div class="hide graphcss">
+        <div id="data4"></div>
+		<canvas id="canvas2Im" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
   </div>
 </div>
 <script>
   		var color = Chart.helpers.color;
+  		var scalefontsize = 16;
 		var config = {
 			type: 'line',
 			data: {
@@ -95,13 +100,15 @@
 						type: 'linear',
 						scaleLabel: {
 							display: true,
-							labelString: 'Distance(cm)'
+							labelString: 'Distance(cm)',
+                            fontSize:scalefontsize
 						}
 					}],
 					yAxes: [{
 						scaleLabel: {
 							display: true,
-							labelString: 'Voltage(V)'
+							labelString: 'Voltage(V)',
+                            fontSize:scalefontsize
 						},
 						id:'voltage',
                         type:'linear',
@@ -113,7 +120,8 @@
 					},{
 					    scaleLabel: {
 							display: true,
-							labelString: 'Current(I)'
+							labelString: 'Current(I)',
+                            fontSize:scalefontsize
 						},
 						id:'current',
                         type:'linear',
@@ -157,13 +165,15 @@
 						type: 'linear',
 						scaleLabel: {
 							display: true,
-							labelString: 'Time(sec)'
+							labelString: 'Time(sec)',
+                            fontSize:scalefontsize
 						}
 					}],
 					yAxes: [{
 						scaleLabel: {
 							display: true,
-							labelString: 'Voltage(V)'
+							labelString: 'Voltage(V)',
+                            fontSize:scalefontsize
 						},
 						id:'voltage',
                         type:'linear',
@@ -171,7 +181,8 @@
 					},{
 					    scaleLabel: {
 							display: true,
-							labelString: 'Current(I)'
+							labelString: 'Current(I)',
+                            fontSize:scalefontsize
 						},
 						id:'current',
                         type:'linear',
@@ -211,13 +222,15 @@
 						type: 'linear',
 						scaleLabel: {
 							display: true,
-							labelString: 'Distance(cm)'
+							labelString: 'Distance(cm)',
+                            fontSize:scalefontsize
 						}
 					}],
 					yAxes: [{
 						scaleLabel: {
 							display: true,
-							labelString: 'Voltage(V)'
+							labelString: 'Voltage(V)',
+                            fontSize:scalefontsize
 						},
 						id:'voltage',
                         type:'linear',
@@ -229,7 +242,8 @@
 					},{
 					    scaleLabel: {
 							display: true,
-							labelString: 'Current(I)'
+							labelString: 'Current(I)',
+                            fontSize:scalefontsize
 						},
 						id:'current',
                         type:'linear',
@@ -273,13 +287,15 @@
 						type: 'linear',
 						scaleLabel: {
 							display: true,
-							labelString: 'Time(sec)'
+							labelString: 'Time(sec)',
+                            fontSize:scalefontsize
 						}
 					}],
 					yAxes: [{
 						scaleLabel: {
 							display: true,
-							labelString: 'Voltage(V)'
+							labelString: 'Voltage(V)',
+                            fontSize:scalefontsize
 						},
 						id:'voltage',
                         type:'linear',
@@ -287,7 +303,8 @@
 					},{
 					    scaleLabel: {
 							display: true,
-							labelString: 'Current(I)'
+							labelString: 'Current(I)',
+                            fontSize:scalefontsize
 						},
 						id:'current',
                         type:'linear',
@@ -308,8 +325,9 @@
 			window.myLineIm = new Chart(ctxIm, configIm);
 			window.myLine2Im = new Chart(ctx2Im, config2Im);
 		};
-		var readcook = document.cookie;
-    	var parsecook = JSON.parse(readcook.substring(5,readcook.length));
+		var readcook = document.cookie.split(';');
+    	var parsecook = JSON.parse(readcook[0].substring(5,readcook[0].length));
+
     	if(parsecook['runningmode']=="distance")
 		{
 		    $('#canvas').parent().removeClass('hide');
@@ -327,6 +345,7 @@
 		    // $('#canvasIm').parent().removeClass('hide');
 		    // $('#canvas2Im').parent().removeClass('hide');
 		}
+
 		startnew();
 	</script>
 </body>

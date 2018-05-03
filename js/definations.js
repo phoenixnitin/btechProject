@@ -85,15 +85,73 @@ async function startnew(){
     var TotalZ = math.add(Zs, Zin);
     // window.location.hash="canvas";
     if(cook['runningmode']=="distance"){
+        filldata("distance",Zo);
         createDataset(2*Math.PI/sourceV.w,numberofcell, Zs, TotalZ, sourceV);
     }
     else if(cook['runningmode']=="time"){
+        filldata("time",Zo);
         plottimedependence(p, Zs,Zo,TotalZ,1/sourceV.f,sourceV.w);
     }
     else if(cook['runningmode']=="both"){
+        filldata("both",Zo);
         createDataset(2*Math.PI/sourceV.w,numberofcell, Zs, TotalZ, sourceV);
         plottimedependence(p, Zs,Zo,TotalZ,1/sourceV.f,sourceV.w);
     }
+}
+
+function filldata(runningtype, Z0){
+    var readcookie = document.cookie.split(';');
+    var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
+    var datavalues=0;
+    var valuearray=[];
+    if(runningtype == 'distance'){
+        valuearray = [0,1,2,3,4,5,6,7,8,9];
+    }
+    else if(runningtype == 'time'){
+        valuearray = [0,1,2,3,4,5,6,9,10,11,12,13];
+    }
+    else{
+        valuearray = [0,1,2,3,4,5,6,7,8,9,10,11,12,13];
+    }
+    $.each(valuearray, function (index, value) {
+        var el = document.createElement('span');
+        $(el).addClass('col-xs-12 col-md-6 col-lg-4');
+        switch (value){
+            case 0: $(el).html("Source Voltage(Vs): "+cook['sourceV']);break;
+            case 1: $(el).html("Source Impedance(Zs): "+cook['sourceImp']);break;
+            case 2: $(el).html("Load Impedance(Zl): "+cook['loadImp']);break;
+            case 3: $(el).html("Resistance(ohm/cm): "+cook['resistance']);break;
+            case 4: $(el).html("Inductance(Henry/cm): "+cook['inductance']);break;
+            case 5: $(el).html("Capacitance(Farad/cm): "+cook['capacitance']);break;
+            case 6: $(el).html("Conductance(mho/cm): "+cook['conductance']);break;
+            case 7: $(el).html("Number of Unit Cell: "+cook['numberofcell']);break;
+            case 8: $(el).html("Number of Reflection: "+cook['numberofreflection']);break;
+            case 9: $(el).html("Characteristic Impedance(Z0): "+math.format(Z0,{"notation":"exponential", "precision":4}));break;
+            case 10: $(el).html("Node Value: "+cook['nodevalue']);break;
+            case 11: $(el).html("Starting Point: "+cook['starting point']);break;
+            case 12: $(el).html("Ending Point: "+cook['ending point']);break;
+            case 13: $(el).html("Steps (in sec): "+cook['step']);break;
+            default: $(el).html("Something is wrong");
+        }
+        if(runningtype == "distance" || runningtype == 'both'){
+            $('#data1').append(el);
+        }
+        else if(runningtype == "time"){
+            $('#data3').append(el);
+        }
+    });
+    if(runningtype == "distance"){
+        $('#data2').html($('#data1').html());
+    }
+    else if(runningtype == "time"){
+        $('#data4').html($('#data3').html());
+    }
+    else{
+        $('#data2').html($('#data1').html());
+        $('#data3').html($('#data1').html());
+        $('#data4').html($('#data1').html());
+    }
+
 }
 
 function sleep(ms) {
@@ -261,15 +319,12 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
     }
   }
 function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
-    var scope = {"t":0};
     var readcookie = document.cookie.split(';');
     var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
-    var srcvol = math.parse(cook['sourceV'], scope);
     var nodevalue = math.eval(cook['nodevalue']);
     var start = math.eval(cook['starting point']);
     var stop = math.eval(cook['ending point']);
     var step = math.eval(cook['step']);
-    var compilesrcvol = srcvol.compile();
     var V_and_t = JSON.parse(localStorage.getItem('V_and_t'));
     var Vs_at_t=V_and_t.Vs;
     var Is_at_t=math.divide(Vs_at_t,TotalZ);
