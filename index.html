@@ -3,6 +3,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="favicon.ico" />
   <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/math.min.js"></script>
+  <script src="js/bootbox.min.js"></script>
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <script src="js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="fonts/muli/muli.css">
@@ -15,9 +17,9 @@
     width: 100%;
   }
   .img-bg{
-    /*background: lightgrey;*/
+    background-color: #dfa66b;
     border-radius: 5px;
-    padding-bottom: 20px;
+    /*padding-bottom: 20px;*/
   }
   .tline{
     margin-bottom:10px;
@@ -30,6 +32,7 @@
   #collectVariables{
     padding: 10px;
     margin-top: 80px;
+    padding-bottom: 80px;
   }
   @media (min-width: 992px) {
     #collectVariables {
@@ -61,9 +64,6 @@
         border-radius: 5px;
         box-shadow: 0px 0px 10px #000;
     }
-    .img-bg{
-        background-color: #dfa66b;
-    }
     input.form-control{
         font-size: 18px;
         color: #000;
@@ -87,7 +87,12 @@
     .button1:hover {
         background-color: #F05826;
     }
-
+    body > div.bootbox.modal.fade.bootbox-prompt.in > div > div > div.modal-footer > button:first-child{
+      display: none;
+    }
+    body > div.bootbox.modal.fade.bootbox-prompt.in > div > div > div.modal-body > div > form > input{
+      background-color: rgba(0,0,0,0.1);
+    }
 </style>
 <body>
 <div class="container">
@@ -166,7 +171,7 @@
           <label for="numberofvaluestoplot">Number of values to plot in 1 sec (Max. 100):</label>
           <input type="text" class="form-control" id="numberofvaluestoplot" value="10" placeholder="10">
         </div>
-        <div style="text-align: center;width: 96%;">
+        <div class="col-xs-12" style="text-align: center;width: 96%;">
           <button type="submit" id="setCookie" class="button1" style="font-size: 18px; margin-top: 10px">Generate Graph</button>
         </div>
       </form>
@@ -176,17 +181,20 @@
 <script>
   $(document).ready(function () {
       function set_height(){
-        if($('body').height()<$(document).height()){
-            $('body').height($(document).height());
-        }
-        if($(document).width()>992){
-            $('#collectVariables > div:first-child').height($('#collectVariables > div:nth-child(2)').height());
+        if($('.container').height()<=$(window).height()){
+            $('body').height($(window).height());
         }
         else{
-            var heightlabel = $('#collectVariables > div:first-child > label').height();
-            var heightimg = $('#collectVariables > div:first-child > img').height();
-            $('#collectVariables > div:first-child').height(heightlabel+heightimg);
-          }
+            $('body').height($('.container').height()+10);
+        }
+        // if($(document).width()>992){
+        $('#collectVariables > div:first-child').height($('#collectVariables > div:nth-child(2)').height());
+        // }
+        // else{
+        //     var heightlabel = $('#collectVariables > div:first-child > label').height();
+        //     var heightimg = $('#collectVariables > div:first-child > img').height();
+        //     $('#collectVariables > div:first-child').height(heightlabel+heightimg);
+        //   }
       }
       set_height();
       $(window).resize(function () {
@@ -240,9 +248,68 @@
         cook['numberofvaluestoplot']=$('#numberofvaluestoplot').val();
         console.log(cook, JSON.stringify(cook));
         document.cookie = "data="+JSON.stringify(cook)+";path:/;expires:";
-        window.open("graph.html");
+
+        if(cook['runningmode']!='distance') {
+            var sourceV = {"amp": "", "w": "", "f": "", "name": ""};
+            var Volt = math.parse(cook['sourceV']);
+            Volt.args.forEach(function (d, i) {
+                if ("value" in d) {
+                    // console.log(d.value);
+                    sourceV.amp = d.value
+                }
+                else {
+                    if ("value" in d.args[0].args[0])
+                        sourceV.w = d.args[0].args[0].value;
+                    else
+                        sourceV.w = d.args[0].args[1].value;
+                    if ("name" in d.args[0].args[0])
+                        sourceV.name = d.args[0].args[0].name;
+                    else
+                        sourceV.name = d.args[0].args[1].name;
+                    // console.log(d.args[0].args[0].value, d.args[0].args[1].name);
+                }
+            });
+            sourceV.f = sourceV.w / (2 * Math.PI);
+            console.log(sourceV);
+            var timeperiod = 1 / sourceV.f;
+            var scope = {'t': 0};
+            var srcvol = math.parse(cook['sourceV'], scope);
+            var compilesrcvol = srcvol.compile();
+            var Vs_at_t_0 = compilesrcvol.eval(scope);
+            console.log(Vs_at_t_0);
+            if (Vs_at_t_0 == 0) {
+                verifytime(compilesrcvol);
+            }
+            else {
+                localStorage.setItem('V_and_t', JSON.stringify({"Vs": Vs_at_t_0, "time": 0}));
+                window.open("graph.html");
+            }
+        }
+        else{
+            window.open("graph.html");
+        }
     })
   });
+
+  function verifytime(compilesrcvol) {
+      var dialog = bootbox.prompt({
+                    closeButton: false,
+                    title: "Forward and reflected value of the Voltage cannot be found. Please enter time(in sec) at which V at node 0 is non-zero.",
+                    inputType: 'number',
+                    callback: function (result) {
+                        console.log(result, math.eval(result));
+                        var scope={'t':result};
+                        var Vs1 = compilesrcvol.eval(scope);
+                        if(Vs1 == 0){
+                            verifytime(compilesrcvol);
+                        }
+                        else{
+                            localStorage.setItem('V_and_t', JSON.stringify({"Vs": Vs1, "time": result}));
+                            window.open("graph.html");
+                        }
+                    }
+      });
+  }
 </script>
 </body>
 </html>

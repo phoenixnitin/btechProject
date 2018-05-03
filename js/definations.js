@@ -14,10 +14,18 @@ async function startnew(){
         config.data.datasets[i].data=[];
     await sleep(200);
     window.myLine.update();
+
+    for(var i=0; i<configIm.data.datasets.length;i++)
+        configIm.data.datasets[i].data=[];
+    window.myLineIm.update();
     for(var i=0; i<config2.data.datasets.length;i++)
         config2.data.datasets[i].data=[];
-    // await sleep(200);
     window.myLine2.update();
+
+    for(var i=0; i<config2Im.data.datasets.length;i++)
+        config2Im.data.datasets[i].data=[];
+    // await sleep(200);
+    window.myLine2Im.update();
 
     completeDatasetV = [];
     completeDatasetI = [];
@@ -100,6 +108,14 @@ function sumarray(arr){
     return sum;
 }
 
+function sumarrayIm(arr){
+    var sum = 0;
+    for(var i=0;i<arr.length;i++){
+        sum += arr[i].im;
+    }
+    return sum;
+}
+
 function addvaluetoplot(x1,y1,x2,y2) {
     config.data.datasets[0].data.push({
                         x: x1,
@@ -116,15 +132,44 @@ function editvalueinplot(x1,y1,x2,y2){
     config.data.datasets[1].data[x2]['y']=y2;
     window.myLine.update();
 }
+
+function addvaluetoplotIm(x1,y1,x2,y2) {
+    configIm.data.datasets[0].data.push({
+                        x: x1,
+                        y: y1,
+                    });
+    configIm.data.datasets[1].data.push({
+                        x: x2,
+                        y: y2,
+                    });
+    window.myLineIm.update();
+}
+function editvalueinplotIm(x1,y1,x2,y2){
+    configIm.data.datasets[0].data[x1]['y']=y1;
+    configIm.data.datasets[1].data[x2]['y']=y2;
+    window.myLineIm.update();
+}
+
+
 function clearplot(){
     for(var i=0; i<config.data.datasets.length;i++)
         config.data.datasets[i].data=[];
     window.myLine.update();
 }
+function clearplotIm(){
+    for(var i=0; i<configIm.data.datasets.length;i++)
+        configIm.data.datasets[i].data=[];
+    window.myLineIm.update();
+}
 function clearplot2(){
     for(var i=0; i<config2.data.datasets.length;i++)
         config2.data.datasets[i].data=[];
     window.myLine2.update();
+}
+function clearplot2Im(){
+    for(var i=0; i<config2Im.data.datasets.length;i++)
+        config2Im.data.datasets[i].data=[];
+    window.myLine2Im.update();
 }
 
 async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
@@ -142,8 +187,11 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
     var Z2 = math.complex(g,w*c);
     for(var factor=0;factor<numberofdatasets;factor++){
         config.options.title.text="Transmission Line @ t = Time Period * "+factor/numberofdatasets;
+        configIm.options.title.text="Transmission Line(Imaginary Part) @ t = Time Period * "+factor/numberofdatasets;
         window.myLine.update();
+        window.myLineIm.update();
         clearplot();
+        clearplotIm();
         var datasetV=[];
         var datasetI=[];
         // console.log(factor/numberofdatasets);
@@ -157,6 +205,7 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
         datasetI.push([Is]);
         console.log("Node 0 (V):"+datasetV[0][0].re, "Node 0 (I):"+datasetI[0][0].re);
         addvaluetoplot(0,datasetV[0][0].re,0, datasetI[0][0].re);
+        addvaluetoplotIm(0,datasetV[0][0].im,0, datasetI[0][0].im);
         // console.log(sumarray(datasetI[0]));
         for(var node=1;node<numberofnodes;node++){
             var Vn=datasetV[node-1][0];
@@ -166,6 +215,7 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
             datasetV.push([Vn_plus_1]);
             datasetI.push([In_plus_1]);
             addvaluetoplot(node,Vn_plus_1.re,node,In_plus_1.re);
+            addvaluetoplotIm(node,Vn_plus_1.im,node,In_plus_1.im);
             console.log("Node "+node+" (V):"+Vn_plus_1.re, "Node "+node+" (I):"+In_plus_1.re);
             await sleep(sleeptime);
             // console.log(sumarray(datasetI[node]));
@@ -182,6 +232,7 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
                         datasetI[j].push(math.subtract(datasetI[j+1][reflect+1],math.multiply(Z2,datasetV[j+1][reflect+1])));
                     }
                     editvalueinplot(j,sumarray(datasetV[j]),j,sumarray(datasetI[j]));
+                    editvalueinplotIm(j,sumarrayIm(datasetV[j]),j,sumarrayIm(datasetI[j]));
                     console.log("Node "+j+" (V):"+datasetV[j][reflect+1].re, "Node "+j+" (I):"+datasetI[j][reflect+1]);
                     await sleep(sleeptime);
                 }
@@ -197,6 +248,7 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
                         datasetI[j].push(math.subtract(datasetI[j-1][reflect+1],math.multiply(Z2,datasetV[j-1][reflect+1])));
                     }
                     editvalueinplot(j,sumarray(datasetV[j]),j,sumarray(datasetI[j]));
+                    editvalueinplotIm(j,sumarrayIm(datasetV[j]),j,sumarrayIm(datasetI[j]));
                     console.log("Node "+j+" (V):"+datasetV[j][reflect+1].re, "Node "+j+" (I):"+datasetI[j][reflect+1]);
                     await sleep(sleeptime);
                 }
@@ -218,19 +270,22 @@ function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
     var stop = math.eval(cook['ending point']);
     var step = math.eval(cook['step']);
     var compilesrcvol = srcvol.compile();
-    var Vs_at_t_0=compilesrcvol.eval(scope);
-    var Is_at_t_0=math.divide(Vs_at_t_0,TotalZ);
-    var V_0_0 = math.multiply(math.subtract(Vs_at_t_0, math.multiply(Is_at_t_0,sourceImp)),TransmissionCoeff[0]);
-    var I_0_0 = math.multiply(Is_at_t_0, TransmissionCoeff[0]);
-    var Vplus = math.divide(math.add(V_0_0,math.multiply(I_0_0,Z0)),2);
-    var Vminus= math.divide(math.subtract(V_0_0,math.multiply(I_0_0,Z0)),2);
+    var V_and_t = JSON.parse(localStorage.getItem('V_and_t'));
+    var Vs_at_t=V_and_t.Vs;
+    var Is_at_t=math.divide(Vs_at_t,TotalZ);
+    var V_0_t = math.multiply(math.subtract(Vs_at_t, math.multiply(Is_at_t,sourceImp)),TransmissionCoeff[0]);
+    var I_0_t = math.multiply(Is_at_t, TransmissionCoeff[0]);
+    var Vplus = math.divide(math.add(V_0_t,math.multiply(I_0_t,Z0)),math.multiply(2,math.exp(math.complex(0,w*V_and_t.time))));
+    var Vminus= math.divide(math.subtract(V_0_t,math.multiply(I_0_t,Z0)),math.multiply(2,math.exp(math.complex(0,w*V_and_t.time))));
     var Iplus = math.divide(Vplus,Z0);
     var Iminus= math.divide(Vminus,Z0);
+
     var datasetV=[];
     var datasetI=[];
     var t=start;
     // config.options.scales.xAxes[0].scaleLabel.labelString="time (sec)";
     config2.options.title.text="Transmission Line @ Node:"+nodevalue;
+    config2Im.options.title.text="Transmission Line(Imaginary Part) @ Node:"+nodevalue;
     var mytimer=setInterval(function () {
         var v = math.add(math.multiply(Vplus,math.exp(math.multiply(-1,gamma,nodevalue-1)),math.exp(math.complex(0,w*t))),math.multiply(Vminus,math.exp(math.multiply(gamma,nodevalue-1)), math.exp(math.complex(0,w*t))));
         var i = math.subtract(math.multiply(Iplus,math.exp(math.multiply(-1,gamma,nodevalue-1)),math.exp(math.complex(0,w*t))),math.multiply(Iminus,math.exp(math.multiply(gamma,nodevalue-1)), math.exp(math.complex(0,w*t))));
@@ -246,6 +301,17 @@ function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
             y: i.re
         });
         window.myLine2.update();
+        config2Im.data.datasets[0].data.push({
+            x: t,
+            y: v.im
+        });
+        config2Im.data.datasets[1].data.push({
+            x: t,
+            y: i.im
+        });
+        window.myLine2Im.update();
+
+
         t+=step;
         if(t>stop){
           clearInterval(mytimer);
