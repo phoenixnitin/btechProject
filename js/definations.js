@@ -315,6 +315,18 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
         // console.log(datasetV, datasetI);
         completeDatasetV.push(datasetV);
         completeDatasetI.push(datasetI);
+        switch(factor){
+            case 0 :$("#btnfor0").removeClass("disabled");break;
+            case 1 :$("#btnfor1").removeClass("disabled");break;
+            case 2 :$("#btnfor2").removeClass("disabled");break;
+            case 3 :$("#btnfor3").removeClass("disabled");break;
+            case 4 :$("#btnfor4").removeClass("disabled");break;
+            case 5 :$("#btnfor5").removeClass("disabled");break;
+            case 6 :$("#btnfor6").removeClass("disabled");break;
+            case 7 :$("#btnfor7").removeClass("disabled");break;
+            case 8 :$("#btnfor8").removeClass("disabled");break;
+            case 9 :$("#btnfor9").removeClass("disabled");break;
+        }
         await sleep(5000);
     }
   }
