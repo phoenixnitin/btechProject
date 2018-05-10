@@ -370,7 +370,13 @@
 		startnew();
     	function saveForAnalysis(dataID) {
     	    var dataname= "data"+dataID;
-    	    var data = JSON.parse(localStorage.getItem("data"));
+    	    var data;
+            if(localStorage.getItem("data") === null){
+    	        data = {};
+            }
+            else {
+                data = JSON.parse(localStorage.getItem("data"));
+            }
     	    data["key"] = dataID;
     	    data[dataname]={"voltage": completeDatasetV[dataID], "current":completeDatasetI[dataID]};
             localStorage.setItem("data", JSON.stringify(data));
