@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="favicon.ico" />
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/math.min.js"></script>
+  <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
+	<script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
+@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
+	<script src="js/chartjs/utils.js"></script>
+</head>
+<style>
+  .bmargin{
+    margin-bottom: 10px !important;
+  }
+  img{
+    width: 100%;
+  }
+  .img-bg{
+    /*background: lightgrey;*/
+    border-radius: 5px;
+    padding-bottom: 20px;
+  }
+  .tline{
+    margin-bottom:10px;
+  }
+  canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+  #collectVariables{
+    padding: 10px;
+  }
+  body{
+    min-width: 728px;
+	background-color: rgba(0, 0, 0, 0.8588235294117647);
+  }
+	.graphcss{
+		background-color: rgb(255, 245, 164);
+    	margin: 20px 0 20px 0;
+    	border-radius: 5px;
+	}
+</style>
+<body>
+<div class="container">
+  <div class="container-fluid">
+    <div class="graphcss">
+        <div id="data1"></div>
+        <canvas id="canvas" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
+	</div>
+
+  </div>
+</div>
+<script>
+  		var color = Chart.helpers.color;
+  		var scalefontsize = 16;
+		var config = {
+			type: 'line',
+			data: {
+				datasets: [{
+					label: 'Voltage',
+					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.green,
+					fill: false,
+                    yAxisID: 'voltage',
+					data: [],
+				},{
+					label: 'Current',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					fill: false,
+                    yAxisID: 'current',
+					data: [],
+				},{
+					label: 'Average Voltage',
+					backgroundColor: color(window.chartColors.purple).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.purple,
+					fill: false,
+                    yAxisID: 'voltage',
+                    lineTension:0,
+					data: [],
+				},{
+					label: 'Average Current',
+					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.blue,
+					fill: false,
+                    yAxisID: 'current',
+                    lineTension:0,
+					data: [],
+				}]
+			},
+			options: {
+			    animation:false,
+				title: {
+				    display:true,
+                    fontSize:20,
+					text: 'Transmission Line'
+				},
+				scales: {
+					xAxes: [{
+					    afterTickToLabelConversion: function(data){
+					        var xLabels = data.ticks;
+					        xLabels.forEach(function (labels, i) {
+                                if (i%100 == 0 && i!=0){
+                                    xLabels[i] = "T";
+                                }
+                                else{
+                                    xLabels[i] = "";
+                                }
+                            });
+                        },
+						type: 'linear',
+						scaleLabel: {
+							display: true,
+							labelString: 'Distance(cm)',
+                            fontSize:scalefontsize
+						},
+                        ticks:{
+						    autoSkip:false,
+                            stepSize:1
+                        }
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Voltage(V)',
+                            fontSize:scalefontsize
+						},
+						id:'voltage',
+                        type:'linear',
+                        position:'left',
+                        ticks:{
+						    suggestedMin:0,
+                            suggestedMax:0
+                        }
+					},{
+					    scaleLabel: {
+							display: true,
+							labelString: 'Current(I)',
+                            fontSize:scalefontsize
+						},
+						id:'current',
+                        type:'linear',
+                        position:'right',
+                        ticks:{
+						    suggestedMin:0,
+                            suggestedMax:0
+                        }
+                    }]
+				},
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+			window.VoltageYAxis=[];
+            window.CurrentYAxis=[];
+		};
+		startnew();
+		function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+        async function startnew() {
+		    var readdata = JSON.parse(localStorage.getItem('data'));
+            var key = readdata['key'];
+            console.log(readdata);
+            var dataset=readdata["data"+key];
+            var xvalue=0;
+            await sleep(100);
+            for(var i=0;i<dataset["voltage"][0].length;i++){
+                if(i%2==0){
+                    for(var j=0;j<dataset["voltage"].length;j++){
+                        addvaluetoplot(xvalue, dataset["voltage"][j][i].re, xvalue, dataset["current"][j][i].re);
+                        xvalue++;
+                        window.VoltageYAxis.push(dataset["voltage"][j][i].re);
+                        window.CurrentYAxis.push(dataset["current"][j][i].re);
+                    }
+                }
+                else{
+                    for(var j=dataset["voltage"].length-1;j>=0;j--){
+                        addvaluetoplot(xvalue, dataset["voltage"][j][i].re, xvalue, dataset["current"][j][i].re);
+                        xvalue++;
+                        window.VoltageYAxis.push(dataset["voltage"][j][i].re);
+                        window.CurrentYAxis.push(dataset["current"][j][i].re);
+                    }
+                }
+            }
+            window.myLine.update();
+            var ave_vol=math.mean(window.VoltageYAxis);
+            var ave_cur=math.mean(window.CurrentYAxis);
+            // await sleep(200);
+            addavevaluetoplot(0,ave_vol,0, ave_cur);
+            addavevaluetoplot(config.data.datasets[0].data.length-1,ave_vol,config.data.datasets[0].data.length-1, ave_cur);
+
+        }
+        function addvaluetoplot(x1,y1,x2,y2) {
+            config.data.datasets[0].data.push({
+                                x: x1,
+                                y: y1,
+                            });
+            config.data.datasets[1].data.push({
+                                x: x2,
+                                y: y2,
+                            });
+        }
+
+        function addavevaluetoplot(x1,y1,x2,y2) {
+            config.data.datasets[2].data.push({
+                                x: x1,
+                                y: y1,
+                            });
+            config.data.datasets[3].data.push({
+                                x: x2,
+                                y: y2,
+                            });
+            window.myLine.update();
+        }
+	</script>
+</body>
+</html>

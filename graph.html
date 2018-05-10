@@ -50,6 +50,9 @@
   <div class="container-fluid">
     <div class="hide graphcss">
         <div id="data1"></div>
+        <div class="button-container col-xs-12">
+            <button id="btnfor1" class="btn btn-default" onclick="saveForAnalysis(0)">Analysis T*0</button>
+        </div>
         <canvas id="canvas" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
     <div class="hide graphcss">
@@ -331,22 +334,29 @@
     	if(parsecook['runningmode']=="distance")
 		{
 		    $('#canvas').parent().removeClass('hide');
-		    // $('#canvasIm').parent().removeClass('hide');
+		    $('#canvasIm').parent().removeClass('hide');
 		}
 		else if(parsecook['runningmode']=="time")
 		{
 		    $('#canvas2').parent().removeClass('hide');
-		    // $('#canvas2Im').parent().removeClass('hide');
+		    $('#canvas2Im').parent().removeClass('hide');
 		}
 		else if(parsecook['runningmode']=="both")
 		{
 		    $('#canvas').parent().removeClass('hide');
 		    $('#canvas2').parent().removeClass('hide');
-		    // $('#canvasIm').parent().removeClass('hide');
-		    // $('#canvas2Im').parent().removeClass('hide');
+		    $('#canvasIm').parent().removeClass('hide');
+		    $('#canvas2Im').parent().removeClass('hide');
 		}
 
 		startnew();
+    	function saveForAnalysis(dataID) {
+    	    var dataname= "data"+dataID;
+    	    var data = {"key":dataID};
+    	    data[dataname]={"voltage": completeDatasetV[dataID], "current":completeDatasetI[dataID]};
+            localStorage.setItem("data", JSON.stringify(data));
+            window.open('analysis.html');
+        }
 	</script>
 </body>
 </html>
