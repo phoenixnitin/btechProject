@@ -135,7 +135,7 @@
 						type: 'linear',
 						scaleLabel: {
 							display: true,
-							labelString: 'Distance(cm)',
+							labelString: 'Reflection Time',
                             fontSize:scalefontsize
 						},
                         ticks:{
@@ -198,18 +198,22 @@
             for(var i=0;i<dataset["voltage"][0].length;i++){
                 if(i%2==0){
                     for(var j=0;j<dataset["voltage"].length;j++){
-                        addvaluetoplot(xvalue, dataset["voltage"][j][i].re, xvalue, dataset["current"][j][i].re);
+                        var voltagesum = sumarray(dataset["voltage"][j], i);
+                        var currentsum = sumarray(dataset["current"][j], i);
+                        addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
                         xvalue++;
-                        window.VoltageYAxis.push(dataset["voltage"][j][i].re);
-                        window.CurrentYAxis.push(dataset["current"][j][i].re);
+                        window.VoltageYAxis.push(voltagesum);
+                        window.CurrentYAxis.push(currentsum);
                     }
                 }
                 else{
                     for(var j=dataset["voltage"].length-1;j>=0;j--){
-                        addvaluetoplot(xvalue, dataset["voltage"][j][i].re, xvalue, dataset["current"][j][i].re);
+                        var voltagesum = sumarray(dataset["voltage"][j],i);
+                        var currentsum = sumarray(dataset["current"][j],i);
+                        addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
                         xvalue++;
-                        window.VoltageYAxis.push(dataset["voltage"][j][i].re);
-                        window.CurrentYAxis.push(dataset["current"][j][i].re);
+                        window.VoltageYAxis.push(voltagesum);
+                        window.CurrentYAxis.push(currentsum);
                     }
                 }
             }
@@ -221,6 +225,15 @@
             addavevaluetoplot(config.data.datasets[0].data.length-1,ave_vol,config.data.datasets[0].data.length-1, ave_cur);
 
         }
+
+        function sumarray(arr, runner){
+            var sum = 0;
+            for(var i=0;i<=runner;i++){
+                sum += arr[i].re;
+            }
+            return sum;
+        }
+
         function addvaluetoplot(x1,y1,x2,y2) {
             config.data.datasets[0].data.push({
                                 x: x1,
