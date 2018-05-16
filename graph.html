@@ -7,6 +7,7 @@
   <script src="js/bootstrap.min.js"></script>
   <script src="js/math.min.js"></script>
     <script src="js/bootbox.min.js"></script>
+    <script src="js/download2.js"></script>
   <script src="js/definations.js"></script>
   <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
 	<script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
@@ -420,10 +421,44 @@
                                     console.log(result);
                                     saveForAnalysis(dataID, "end");
                                 }
+                            },
+                            button3:{
+                                label:"Download CSV",
+                                className:"btn-primary",
+                                id:"csvDownloader",
+                                callback: function () {
+                                    downloadCSV(dataID);
+                                }
                             }
                         },
 
             });
+            function downloadCSV(dataID){
+                var readcookie = document.cookie.split(';');
+                var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
+                var numberofreflection = math.eval(cook['numberofreflection']);
+                var row;
+                var file;
+                row = "node, voltage, current";
+                for(var i=0;i<numberofreflection;i++){
+                    row+=", voltage(ref"+(i+1)+"), "+"current(ref"+(i+1)+")";
+                }
+                file = row+"\n";
+                for(var i=0;i<completeDatasetV[dataID].length;i++){
+                    row=i+", ";
+                    for(var j=0;j<completeDatasetV[dataID][i].length;j++){
+                        if(j==0) {
+                            row += completeDatasetV[dataID][i][j].re + ", " + completeDatasetI[dataID][i][j].re;
+                        }
+                        else{
+                            row += ", "+completeDatasetV[dataID][i][j].re + ", " + completeDatasetI[dataID][i][j].re;
+                        }
+                    };
+                    file+=row+"\n";
+                }
+                console.log(file);
+                download(file, "analysis_T_0."+dataID+".csv", "text/plain");
+            }
         }
 	</script>
 </body>
