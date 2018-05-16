@@ -53,9 +53,18 @@
     }
     .button-container{
         text-align: center;
+        cursor: not-allowed;
     }
     .modal-footer{
         text-align: center;
+    }
+    .btn-info{
+        color: #000;
+        background-color: #b5eeff;
+    }
+    .btn-info:hover, .btn-info:active, .btn-info:focus{
+        color: #000;
+        background-color: #7dddf9;
     }
 </style>
 <body>
@@ -65,16 +74,16 @@
         <h4 class="col-xs-12"><u>Initial data:</u></h4>
         <div id="data1"></div>
         <div class="button-container col-xs-12">
-            <button id="btnfor0" class="btn btn-default disabled" onclick="takeNode(0)">Analysis T*0.0</button>
-            <button id="btnfor1" class="btn btn-default disabled" onclick="takeNode(1)">Analysis T*0.1</button>
-            <button id="btnfor2" class="btn btn-default disabled" onclick="takeNode(2)">Analysis T*0.2</button>
-            <button id="btnfor3" class="btn btn-default disabled" onclick="takeNode(3)">Analysis T*0.3</button>
-            <button id="btnfor4" class="btn btn-default disabled" onclick="takeNode(4)">Analysis T*0.4</button>
-            <button id="btnfor5" class="btn btn-default disabled" onclick="takeNode(5)">Analysis T*0.5</button>
-            <button id="btnfor6" class="btn btn-default disabled" onclick="takeNode(6)">Analysis T*0.6</button>
-            <button id="btnfor7" class="btn btn-default disabled" onclick="takeNode(7)">Analysis T*0.7</button>
-            <button id="btnfor8" class="btn btn-default disabled" onclick="takeNode(8)">Analysis T*0.8</button>
-            <button id="btnfor9" class="btn btn-default disabled" onclick="takeNode(9)">Analysis T*0.9</button>
+            <button id="btnfor0" class="btn btn-info disabled" onclick="takeNode(0)">Analysis T*0.0</button>
+            <button id="btnfor1" class="btn btn-info disabled" onclick="takeNode(1)">Analysis T*0.1</button>
+            <button id="btnfor2" class="btn btn-info disabled" onclick="takeNode(2)">Analysis T*0.2</button>
+            <button id="btnfor3" class="btn btn-info disabled" onclick="takeNode(3)">Analysis T*0.3</button>
+            <button id="btnfor4" class="btn btn-info disabled" onclick="takeNode(4)">Analysis T*0.4</button>
+            <button id="btnfor5" class="btn btn-info disabled" onclick="takeNode(5)">Analysis T*0.5</button>
+            <button id="btnfor6" class="btn btn-info disabled" onclick="takeNode(6)">Analysis T*0.6</button>
+            <button id="btnfor7" class="btn btn-info disabled" onclick="takeNode(7)">Analysis T*0.7</button>
+            <button id="btnfor8" class="btn btn-info disabled" onclick="takeNode(8)">Analysis T*0.8</button>
+            <button id="btnfor9" class="btn btn-info disabled" onclick="takeNode(9)">Analysis T*0.9</button>
         </div>
         <canvas id="canvas" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
