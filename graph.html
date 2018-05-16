@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <script src="js/bootstrap.min.js"></script>
   <script src="js/math.min.js"></script>
+    <script src="js/bootbox.min.js"></script>
   <script src="js/definations.js"></script>
   <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
 	<script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
@@ -53,23 +54,27 @@
     .button-container{
         text-align: center;
     }
+    .modal-footer{
+        text-align: center;
+    }
 </style>
 <body>
 <div class="container">
   <div class="container-fluid">
     <div class="hide graphcss">
+        <h4 class="col-xs-12"><u>Initial data:</u></h4>
         <div id="data1"></div>
         <div class="button-container col-xs-12">
-            <button id="btnfor0" class="btn btn-default disabled" onclick="saveForAnalysis(0)">Analysis T*0.0</button>
-            <button id="btnfor1" class="btn btn-default disabled" onclick="saveForAnalysis(1)">Analysis T*0.1</button>
-            <button id="btnfor2" class="btn btn-default disabled" onclick="saveForAnalysis(2)">Analysis T*0.2</button>
-            <button id="btnfor3" class="btn btn-default disabled" onclick="saveForAnalysis(3)">Analysis T*0.3</button>
-            <button id="btnfor4" class="btn btn-default disabled" onclick="saveForAnalysis(4)">Analysis T*0.4</button>
-            <button id="btnfor5" class="btn btn-default disabled" onclick="saveForAnalysis(5)">Analysis T*0.5</button>
-            <button id="btnfor6" class="btn btn-default disabled" onclick="saveForAnalysis(6)">Analysis T*0.6</button>
-            <button id="btnfor7" class="btn btn-default disabled" onclick="saveForAnalysis(7)">Analysis T*0.7</button>
-            <button id="btnfor8" class="btn btn-default disabled" onclick="saveForAnalysis(8)">Analysis T*0.8</button>
-            <button id="btnfor9" class="btn btn-default disabled" onclick="saveForAnalysis(9)">Analysis T*0.9</button>
+            <button id="btnfor0" class="btn btn-default disabled" onclick="takeNode(0)">Analysis T*0.0</button>
+            <button id="btnfor1" class="btn btn-default disabled" onclick="takeNode(1)">Analysis T*0.1</button>
+            <button id="btnfor2" class="btn btn-default disabled" onclick="takeNode(2)">Analysis T*0.2</button>
+            <button id="btnfor3" class="btn btn-default disabled" onclick="takeNode(3)">Analysis T*0.3</button>
+            <button id="btnfor4" class="btn btn-default disabled" onclick="takeNode(4)">Analysis T*0.4</button>
+            <button id="btnfor5" class="btn btn-default disabled" onclick="takeNode(5)">Analysis T*0.5</button>
+            <button id="btnfor6" class="btn btn-default disabled" onclick="takeNode(6)">Analysis T*0.6</button>
+            <button id="btnfor7" class="btn btn-default disabled" onclick="takeNode(7)">Analysis T*0.7</button>
+            <button id="btnfor8" class="btn btn-default disabled" onclick="takeNode(8)">Analysis T*0.8</button>
+            <button id="btnfor9" class="btn btn-default disabled" onclick="takeNode(9)">Analysis T*0.9</button>
         </div>
         <canvas id="canvas" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
@@ -78,6 +83,7 @@
 		<canvas id="canvasIm" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
     <div class="hide graphcss">
+        <h4 class="col-xs-12"><u>Initial data:</u></h4>
         <div id="data3"></div>
 		<canvas id="canvas2" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
@@ -99,6 +105,7 @@
 					borderColor: window.chartColors.green,
 					fill: false,
                     yAxisID: 'voltage',
+                    lineTension: 0,
 					data: [],
 				},{
 					label: 'Current',
@@ -106,6 +113,7 @@
 					borderColor: window.chartColors.red,
 					fill: false,
                     yAxisID: 'current',
+                    lineTension: 0,
 					data: [],
 				}]
 			},
@@ -352,23 +360,23 @@
     	if(parsecook['runningmode']=="distance")
 		{
 		    $('#canvas').parent().removeClass('hide');
-		    $('#canvasIm').parent().removeClass('hide');
+		    // $('#canvasIm').parent().removeClass('hide');
 		}
 		else if(parsecook['runningmode']=="time")
 		{
 		    $('#canvas2').parent().removeClass('hide');
-		    $('#canvas2Im').parent().removeClass('hide');
+		    // $('#canvas2Im').parent().removeClass('hide');
 		}
 		else if(parsecook['runningmode']=="both")
 		{
 		    $('#canvas').parent().removeClass('hide');
 		    $('#canvas2').parent().removeClass('hide');
-		    $('#canvasIm').parent().removeClass('hide');
-		    $('#canvas2Im').parent().removeClass('hide');
+		    // $('#canvasIm').parent().removeClass('hide');
+		    // $('#canvas2Im').parent().removeClass('hide');
 		}
 
 		startnew();
-    	function saveForAnalysis(dataID) {
+    	function saveForAnalysis(dataID, nodeforanalysis) {
     	    var dataname= "data"+dataID;
     	    var data;
             if(localStorage.getItem("data") === null){
@@ -378,9 +386,35 @@
                 data = JSON.parse(localStorage.getItem("data"));
             }
     	    data["key"] = dataID;
+            data["nodeforanalysis"]=nodeforanalysis;
     	    data[dataname]={"voltage": completeDatasetV[dataID], "current":completeDatasetI[dataID]};
             localStorage.setItem("data", JSON.stringify(data));
             window.open('analysis.html');
+        }
+        function takeNode(dataID) {
+            var dialog = bootbox.dialog({
+                        closeButton: true,
+                        message: "Please choose the point:-",
+                        buttons:{
+                            button1:{
+                                label:"Starting point",
+                                className:"btn-primary",
+                                callback: function (result) {
+                                    console.log(result);
+                                    saveForAnalysis(dataID, "start");
+                                }
+                            },
+                            button2:{
+                                label:"End point",
+                                className:"btn-primary",
+                                callback: function (result) {
+                                    console.log(result);
+                                    saveForAnalysis(dataID, "end");
+                                }
+                            }
+                        },
+
+            });
         }
 	</script>
 </body>

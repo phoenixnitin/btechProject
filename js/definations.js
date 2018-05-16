@@ -74,6 +74,8 @@ async function startnew(){
 
     // characteristic impedance, Zo
     var Zo = math.sqrt(math.divide(math.complex(r,sourceV.w*l),math.complex(g,sourceV.w * c)));
+    // Zo.re = 100;
+    // Zo.im = 0;
     ReflectionCoeff.push(math.divide(math.subtract(Zo, Zs), math.add(Zo, Zs)));
     ReflectionCoeff.push(math.divide(math.subtract(Zl, Zo), math.add(Zl, Zo)));
     ReflectionCoeff.push(math.divide(math.subtract(Zs, Zo), math.add(Zs, Zo)));
@@ -82,6 +84,8 @@ async function startnew(){
     TransmissionCoeff.push(math.divide(math.multiply(2, Zs), math.add(Zs, Zo)));
     var const_a = calculateTanh(math.multiply(p, numberofcell+1));
     var Zin = math.multiply(Zo,math.divide(math.add(Zl, math.multiply(math.complex(0,1),Zo,const_a)),math.add(Zo, math.multiply(math.complex(0,1),Zl, const_a))));
+    // Zin.re = 100;
+    // Zin.im = 0;
     var TotalZ = math.add(Zs, Zin);
     // window.location.hash="canvas";
     if(cook['runningmode']=="distance"){
@@ -102,7 +106,6 @@ async function startnew(){
 function filldata(runningtype, Z0){
     var readcookie = document.cookie.split(';');
     var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
-    var datavalues=0;
     var valuearray=[];
     if(runningtype == 'distance'){
         valuearray = [0,1,2,3,4,5,6,7,8,9];
@@ -115,18 +118,18 @@ function filldata(runningtype, Z0){
     }
     $.each(valuearray, function (index, value) {
         var el = document.createElement('span');
-        $(el).addClass('col-xs-12 col-md-6 col-lg-4');
+        $(el).addClass('col-xs-6 col-md-4');
         switch (value){
-            case 0: $(el).html("Source Voltage(Vs): "+cook['sourceV']);break;
-            case 1: $(el).html("Source Impedance(Zs): "+cook['sourceImp']);break;
-            case 2: $(el).html("Load Impedance(Zl): "+cook['loadImp']);break;
+            case 0: $(el).html("Source Voltage(Vs, in V): "+cook['sourceV']);break;
+            case 1: $(el).html("Source Impedance(Zs, in ohm): "+cook['sourceImp']);break;
+            case 2: $(el).html("Load Impedance(Zl, in ohm): "+cook['loadImp']);break;
             case 3: $(el).html("Resistance(ohm/cm): "+cook['resistance']);break;
             case 4: $(el).html("Inductance(Henry/cm): "+cook['inductance']);break;
             case 5: $(el).html("Capacitance(Farad/cm): "+cook['capacitance']);break;
             case 6: $(el).html("Conductance(mho/cm): "+cook['conductance']);break;
             case 7: $(el).html("Number of Unit Cell: "+cook['numberofcell']);break;
             case 8: $(el).html("Number of Reflection: "+cook['numberofreflection']);break;
-            case 9: $(el).html("Characteristic Impedance(Z0): "+math.format(Z0,{"notation":"exponential", "precision":4}));break;
+            case 9: $(el).html("Characteristic Impedance(Z0, in ohm/cm): "+math.format(Z0,{"notation":"exponential", "precision":4}));break;
             case 10: $(el).html("Node Value: "+cook['nodevalue']);break;
             case 11: $(el).html("Starting Point: "+cook['starting point']);break;
             case 12: $(el).html("Ending Point: "+cook['ending point']);break;

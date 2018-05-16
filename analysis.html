@@ -57,7 +57,6 @@
 <script>
   		var color = Chart.helpers.color;
   		var scalefontsize = 16;
-  		var xlabeloffset=0;
 		var config = {
 			type: 'line',
 			data: {
@@ -77,22 +76,6 @@
                     yAxisID: 'current',
                     lineTension:0,
 					data: [],
-				},{
-					label: 'Average Voltage',
-					backgroundColor: color(window.chartColors.purple).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.purple,
-					fill: false,
-                    yAxisID: 'voltage',
-                    lineTension:0,
-					data: [],
-				},{
-					label: 'Average Current',
-					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.blue,
-					fill: false,
-                    yAxisID: 'current',
-                    lineTension:0,
-					data: [],
 				}]
 			},
 			options: {
@@ -104,31 +87,15 @@
 				},
 				scales: {
 					xAxes: [{
-					    afterTickToLabelConversion: function(data){
-					        var no_of_nodes = JSON.parse(localStorage.getItem("numberofnodes"));
-					        var temp = no_of_nodes;
-					        console.log("number of nodes:", no_of_nodes);
+                        afterTickToLabelConversion: function(data){
 					        var xLabels = data.ticks;
 					        console.log("labels length:", xLabels.length);
-					        var Tcounter = 1;
-					        for(var i=0;i<xLabels.length;i++){
-                                if (i%(no_of_nodes-1) == 0 && i!=0){
-                                    if(Tcounter==1){
-                                        xLabels[i] = "T";
-                                        Tcounter++;
-                                    }
-                                    else{
-                                        xLabels[i] = Tcounter+"T";
-                                        Tcounter++;
-                                    }
-                                    console.log(i);
-                                    // xLabels[i]="";
-                                    no_of_nodes+=temp ;
+					        for(var i=1;i<xLabels.length;i++){
+                                if (i == 1){
+                                    xLabels[i] = "T";
                                 }
                                 else{
-
-                                    if(xLabels[i][xLabels[i].length-1] != "T")
-                                        xLabels[i] = "";
+                                    xLabels[i] = i+"T";
                                 }
                             }
                         },
@@ -194,36 +161,68 @@
             await sleep(200);
             window.myLine.update();
             var xvalue=0;
+            var nodeforanalysis = readdata["nodeforanalysis"];
             await sleep(100);
-            for(var i=0;i<dataset["voltage"][0].length;i++){
-                if(i%2==0){
-                    for(var j=0;j<dataset["voltage"].length;j++){
-                        var voltagesum = sumarray(dataset["voltage"][j], i);
-                        var currentsum = sumarray(dataset["current"][j], i);
+            if(nodeforanalysis == "start") {
+                config.options.title.text="Transmission Line Analysis at Source";
+                var nodeforanalysisnum = 0;
+                for (var i = 0; i < dataset["voltage"][0].length; i++) {
+                    if (i % 2 == 0) {
+                        // for(var j=0;j<dataset["voltage"].length;j++){
+                        var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
+                        var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
                         addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                        xvalue++;
+                        addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                        addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
                         xvalue++;
                         window.VoltageYAxis.push(voltagesum);
                         window.CurrentYAxis.push(currentsum);
+                        // }
                     }
-                }
-                else{
-                    for(var j=dataset["voltage"].length-1;j>=0;j--){
-                        var voltagesum = sumarray(dataset["voltage"][j],i);
-                        var currentsum = sumarray(dataset["current"][j],i);
+                    else {
+                        // for(var j=dataset["voltage"].length-1;j>=0;j--){
+                        i++;
+                        if (i > dataset["voltage"][nodeforanalysisnum].length - 1) {
+                            i--;
+                        }
+                        var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
+                        var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
                         addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                        xvalue++;
+                        addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                        addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
                         xvalue++;
                         window.VoltageYAxis.push(voltagesum);
                         window.CurrentYAxis.push(currentsum);
+                        // }
                     }
                 }
             }
+            else{
+                config.options.title.text="Transmission Line Analysis at Load";
+                var nodeforanalysisnum = dataset["voltage"].length-1;
+                addvaluetoplot(xvalue, 0, xvalue, 0);
+                addvaluetoplot((xvalue + 1 - (1 / 100000)), 0, (xvalue + 1 - (1 / 100000)), 0);
+                xvalue++;
+                for (var i = 0; i < dataset["voltage"][0].length; i++) {
+                    i++;
+                    if (i > dataset["voltage"][nodeforanalysisnum].length - 1) {
+                        i--;
+                    }
+                    // for(var j=0;j<dataset["voltage"].length;j++){
+                    var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
+                    var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
+                    addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                    xvalue++;
+                    addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                    addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
+                    xvalue++;
+                    window.VoltageYAxis.push(voltagesum);
+                    window.CurrentYAxis.push(currentsum);
+                }
+            }
             window.myLine.update();
-            var ave_vol=math.mean(window.VoltageYAxis);
-            var ave_cur=math.mean(window.CurrentYAxis);
-            // await sleep(200);
-            addavevaluetoplot(0,ave_vol,0, ave_cur);
-            addavevaluetoplot(config.data.datasets[0].data.length-1,ave_vol,config.data.datasets[0].data.length-1, ave_cur);
-
         }
 
         function sumarray(arr, runner){
