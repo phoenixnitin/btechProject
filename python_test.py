@@ -1,5 +1,6 @@
 import math
 import cmath
+import pdb
 
 def sumarray(arr,data, nodenum):
 	mysum=0
@@ -131,17 +132,20 @@ for factor in drange(0, 1, 0.1):
 # 			for j in range(len(completeDatasetV[k])-1,-1,-1):
 # 				print("j:{}, i:{})   V:{}   \t I:{}".format(j,i,completeDatasetV[k][j][i], completeDatasetI[k][j][i]))
 
+pdb.set_trace()
 nodevalue=3
-Vs_at_t_0 = 220*math.cos(w*t*0)
-Is_at_t_0 = Vs_at_t_0/totalZ
-V_0_0=transmissionCoeff[0]*(Vs_at_t_0-Is_at_t_0*Zs)
-I_0_0=transmissionCoeff[0]*Is_at_t_0
-Vplus=(V_0_0+I_0_0*Z0)/2
-Vminus=(V_0_0-I_0_0*Z0)/2
+new_t = 0.002
+print("time:{}".format(new_t))
+Vs_at_t = 220*math.sin(w*new_t)
+Is_at_t = Vs_at_t/totalZ
+V_0_t=transmissionCoeff[0]*(Vs_at_t-Is_at_t*Zs)
+I_0_t=transmissionCoeff[0]*Is_at_t
+Vplus=(V_0_t+I_0_t*Z0)/(2*cmath.exp(complex(0,w*new_t)))
+Vminus=(V_0_t-I_0_t*Z0)/(2*cmath.exp(complex(0,w*new_t)))
 Iplus=Vplus/Z0
 Iminus=Vminus/Z0
 
-print("Vs_at_t_0:{}\nIs_at_t_0:{}\nV_0_0:{}\nI_0_0:{}\ntotalZ:{}".format(Vs_at_t_0, Is_at_t_0, V_0_0, I_0_0, totalZ))
+print("Vs_at_t:{}\nIs_at_t:{}\nV_0_t:{}\nI_0_t:{}\ntotalZ:{}".format(Vs_at_t, Is_at_t, V_0_t, I_0_t, totalZ))
 print("Vplus:{}\nVminus:{}\nIplus:{}\nIminus:{}".format(Vplus,Vminus,Iplus,Iminus))
 
 datasetV2=[]
