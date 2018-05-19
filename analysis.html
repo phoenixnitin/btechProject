@@ -1,53 +1,54 @@
 <!DOCTYPE html>
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="favicon.ico" />
-  <script src="js/jquery-3.2.1.min.js"></script>
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/math.min.js"></script>
-  <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
-	<script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
-@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
-	<script src="js/chartjs/utils.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico" />
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/math.min.js"></script>
+    <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
+    <script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
+    @-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
+    <script src="js/chartjs/utils.js"></script>
 </head>
+<!-- Provide design to the page -->
 <style>
-  .bmargin{
-    margin-bottom: 10px !important;
-  }
-  img{
-    width: 100%;
-  }
-  .img-bg{
-    /*background: lightgrey;*/
-    border-radius: 5px;
-    padding-bottom: 20px;
-  }
-  .tline{
-    margin-bottom:10px;
-  }
-  canvas {
+    .bmargin{
+        margin-bottom: 10px !important;
+    }
+    img{
+        width: 100%;
+    }
+    .img-bg{
+        border-radius: 5px;
+        padding-bottom: 20px;
+    }
+    .tline{
+        margin-bottom:10px;
+    }
+    canvas {
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
     }
-  #collectVariables{
-    padding: 10px;
-  }
-  body{
-    min-width: 728px;
-	background-color: rgba(0, 0, 0, 0.8588235294117647);
-  }
-	.graphcss{
-		background-color: rgb(255, 245, 164);
-    	margin: 20px 0 20px 0;
-    	border-radius: 5px;
-	}
+    #collectVariables{
+        padding: 10px;
+    }
+    body{
+        min-width: 728px;
+        background-color: rgba(0, 0, 0, 0.8588235294117647);
+    }
+    .graphcss{
+        background-color: rgb(255, 245, 164);
+        margin: 20px 0 20px 0;
+        border-radius: 5px;
+    }
 </style>
 <body>
 <div class="container">
   <div class="container-fluid">
     <div class="graphcss">
+        <h4 class="col-xs-12"><u>Initial data:</u></h4>
         <div id="data1"></div>
         <canvas id="canvas" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
@@ -55,206 +56,231 @@
   </div>
 </div>
 <script>
-  		var color = Chart.helpers.color;
-  		var scalefontsize = 16;
-		var config = {
-			type: 'line',
-			data: {
-				datasets: [{
-					label: 'Voltage',
-					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.green,
-					fill: false,
-                    yAxisID: 'voltage',
-                    lineTension:0,
-					data: [],
-				},{
-					label: 'Current',
-					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.red,
-					fill: false,
-                    yAxisID: 'current',
-                    lineTension:0,
-					data: [],
-				}]
-			},
-			options: {
-			    animation:false,
-				title: {
-				    display:true,
-                    fontSize:20,
-					text: 'Transmission Line'
-				},
-				scales: {
-					xAxes: [{
-                        afterTickToLabelConversion: function(data){
-					        var xLabels = data.ticks;
-					        console.log("labels length:", xLabels.length);
-					        for(var i=1;i<xLabels.length;i++){
-                                if (i == 1){
-                                    xLabels[i] = "T";
-                                }
-                                else{
-                                    xLabels[i] = i+"T";
-                                }
-                            }
-                        },
-						type: 'linear',
-						scaleLabel: {
-							display: true,
-							labelString: 'Reflection Time',
-                            fontSize:scalefontsize
-						},
-                        ticks:{
-						    autoSkip:false,
-                            stepSize:1
-                        }
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'Voltage(V)',
-                            fontSize:scalefontsize
-						},
-						id:'voltage',
-                        type:'linear',
-                        position:'left',
-                        ticks:{
-						    suggestedMin:0,
-                            suggestedMax:0
-                        }
-					},{
-					    scaleLabel: {
-							display: true,
-							labelString: 'Current(I)',
-                            fontSize:scalefontsize
-						},
-						id:'current',
-                        type:'linear',
-                        position:'right',
-                        ticks:{
-						    suggestedMin:0,
-                            suggestedMax:0
-                        }
-                    }]
-				},
-			}
-		};
+var color = Chart.helpers.color;
+filldata();
 
-		window.onload = function() {
-			var ctx = document.getElementById('canvas').getContext('2d');
-			window.myLine = new Chart(ctx, config);
-			window.VoltageYAxis=[];
-            window.CurrentYAxis=[];
-            window.numberofnodes = 1;
-		};
-		startnew();
-		function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+// Set the font size for the text inside the canvas
+var scalefontsize = 16;
+
+// Configuration for source and load analysis graph
+var config = {
+    type: 'line',
+    data: {
+        datasets: [{
+            label: 'Voltage',
+            backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+            borderColor: window.chartColors.green,
+            fill: false,
+            yAxisID: 'voltage',
+            lineTension:0,
+            data: [],
+        },{
+            label: 'Current',
+            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+            borderColor: window.chartColors.red,
+            fill: false,
+            yAxisID: 'current',
+            lineTension:0,
+            data: [],
+        }]
+    },
+    options: {
+        animation:false,
+        title: {
+            display:true,
+            fontSize:20,
+            text: 'Transmission Line'
+        },
+        scales: {
+            xAxes: [{
+                afterTickToLabelConversion: function(data){
+                    var xLabels = data.ticks;
+                    console.log("labels length:", xLabels.length);
+                    for(var i=1;i<xLabels.length;i++){
+                        if (i == 1){
+                            xLabels[i] = "T";
+                        }
+                        else{
+                            xLabels[i] = i+"T";
+                        }
+                    }
+                },
+                type: 'linear',
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Reflection Time',
+                    fontSize:scalefontsize
+                },
+                ticks:{
+                    autoSkip:false,
+                    stepSize:1
+                }
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Voltage(V)',
+                    fontSize:scalefontsize
+                },
+                id:'voltage',
+                type:'linear',
+                position:'left',
+                ticks:{
+                    suggestedMin:0,
+                    suggestedMax:0
+                }
+            },{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Current(I)',
+                    fontSize:scalefontsize
+                },
+                id:'current',
+                type:'linear',
+                position:'right',
+                ticks:{
+                    suggestedMin:0,
+                    suggestedMax:0
+                }
+            }]
+        },
+    }
+};
+
+window.onload = function() {
+    // Initialize canvas other global parameters on page load
+    var ctx = document.getElementById('canvas').getContext('2d');
+    window.myLine = new Chart(ctx, config);
+    window.VoltageYAxis=[];
+    window.CurrentYAxis=[];
+    window.numberofnodes = 1;
+};
+
+// Call the function to start calculating values
+startnew();
+
+// Function to cause execution sleep
+function sleep(ms) {
+return new Promise(resolve => setTimeout(resolve, ms));
 }
-        async function startnew() {
-		    var readdata = JSON.parse(localStorage.getItem('data'));
-            var key = readdata['key'];
-            console.log(readdata);
-            var dataset=readdata["data"+key];
-            localStorage.setItem("numberofnodes", JSON.stringify(dataset["voltage"].length));
-            await sleep(200);
-            window.myLine.update();
-            var xvalue=0;
-            var nodeforanalysis = readdata["nodeforanalysis"];
-            await sleep(100);
-            if(nodeforanalysis == "start") {
-                config.options.title.text="Transmission Line Analysis at Source";
-                var nodeforanalysisnum = 0;
-                for (var i = 0; i < dataset["voltage"][0].length; i++) {
-                    if (i % 2 == 0) {
-                        // for(var j=0;j<dataset["voltage"].length;j++){
-                        var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
-                        var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
-                        addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
-                        xvalue++;
-                        addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
-                        addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
-                        xvalue++;
-                        window.VoltageYAxis.push(voltagesum);
-                        window.CurrentYAxis.push(currentsum);
-                        // }
-                    }
-                    else {
-                        // for(var j=dataset["voltage"].length-1;j>=0;j--){
-                        i++;
-                        if (i > dataset["voltage"][nodeforanalysisnum].length - 1) {
-                            i--;
-                        }
-                        var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
-                        var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
-                        addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
-                        xvalue++;
-                        addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
-                        addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
-                        xvalue++;
-                        window.VoltageYAxis.push(voltagesum);
-                        window.CurrentYAxis.push(currentsum);
-                        // }
-                    }
-                }
-            }
-            else{
-                config.options.title.text="Transmission Line Analysis at Load";
-                var nodeforanalysisnum = dataset["voltage"].length-1;
-                addvaluetoplot(xvalue, 0, xvalue, 0);
-                addvaluetoplot((xvalue + 1 - (1 / 100000)), 0, (xvalue + 1 - (1 / 100000)), 0);
+
+// Asynchronous function to be able to use sleep function
+async function startnew() {
+    // Reading data from localstorage
+    var readdata = JSON.parse(localStorage.getItem('data'));
+    var key = readdata['key'];
+    console.log(readdata);
+    var dataset=readdata["data"+key];
+    localStorage.setItem("numberofnodes", JSON.stringify(dataset["voltage"].length));
+    await sleep(200);
+    window.myLine.update();
+    var xvalue=0;
+    var nodeforanalysis = readdata["nodeforanalysis"];
+    await sleep(100);
+
+    // Calculate values to add into the plot.
+    if(nodeforanalysis == "start") {
+        config.options.title.text="Transmission Line Analysis at Source";
+        var nodeforanalysisnum = 0;
+        for (var i = 0; i < dataset["voltage"][0].length; i++) {
+            if (i % 2 == 0) {
+                var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
+                var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
+                addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
                 xvalue++;
-                for (var i = 0; i < dataset["voltage"][0].length; i++) {
-                    i++;
-                    if (i > dataset["voltage"][nodeforanalysisnum].length - 1) {
-                        i--;
-                    }
-                    // for(var j=0;j<dataset["voltage"].length;j++){
-                    var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
-                    var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
-                    addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
-                    xvalue++;
-                    addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
-                    addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
-                    xvalue++;
-                    window.VoltageYAxis.push(voltagesum);
-                    window.CurrentYAxis.push(currentsum);
+                addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
+                xvalue++;
+                window.VoltageYAxis.push(voltagesum);
+                window.CurrentYAxis.push(currentsum);
+            }
+            else {
+                i++;
+                if (i > dataset["voltage"][nodeforanalysisnum].length - 1) {
+                    i--;
                 }
+                var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
+                var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
+                addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                xvalue++;
+                addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+                addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
+                xvalue++;
+                window.VoltageYAxis.push(voltagesum);
+                window.CurrentYAxis.push(currentsum);
             }
-            window.myLine.update();
         }
-
-        function sumarray(arr, runner){
-            var sum = 0;
-            for(var i=0;i<=runner;i++){
-                sum += arr[i].re;
+    }
+    else{
+        config.options.title.text="Transmission Line Analysis at Load";
+        var nodeforanalysisnum = dataset["voltage"].length-1;
+        addvaluetoplot(xvalue, 0, xvalue, 0);
+        addvaluetoplot((xvalue + 1 - (1 / 100000)), 0, (xvalue + 1 - (1 / 100000)), 0);
+        xvalue++;
+        for (var i = 0; i < dataset["voltage"][0].length; i++) {
+            i++;
+            if (i > dataset["voltage"][nodeforanalysisnum].length - 1) {
+                i--;
             }
-            return sum;
+            var voltagesum = sumarray(dataset["voltage"][nodeforanalysisnum], i);
+            var currentsum = sumarray(dataset["current"][nodeforanalysisnum], i);
+            addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+            xvalue++;
+            addvaluetoplot(xvalue, voltagesum, xvalue, currentsum);
+            addvaluetoplot((xvalue + 1 - (1 / 100000)), voltagesum, (xvalue + 1 - (1 / 100000)), currentsum);
+            xvalue++;
+            window.VoltageYAxis.push(voltagesum);
+            window.CurrentYAxis.push(currentsum);
         }
+    }
+    window.myLine.update();
+}
 
-        function addvaluetoplot(x1,y1,x2,y2) {
-            config.data.datasets[0].data.push({
-                                x: x1,
-                                y: y1,
-                            });
-            config.data.datasets[1].data.push({
-                                x: x2,
-                                y: y2,
-                            });
-        }
+// Returns the sum of a till index=runner
+function sumarray(arr, runner){
+    var sum = 0;
+    for(var i=0;i<=runner;i++){
+        sum += arr[i].re;
+    }
+    return sum;
+}
 
-        function addavevaluetoplot(x1,y1,x2,y2) {
-            config.data.datasets[2].data.push({
-                                x: x1,
-                                y: y1,
-                            });
-            config.data.datasets[3].data.push({
-                                x: x2,
-                                y: y2,
-                            });
-            window.myLine.update();
+// Adds the values of current and voltage to the plot
+function addvaluetoplot(x1,y1,x2,y2) {
+    config.data.datasets[0].data.push({
+                        x: x1,
+                        y: y1,
+                    });
+    config.data.datasets[1].data.push({
+                        x: x2,
+                        y: y2,
+                    });
+}
+
+// Fills some relevant data at the top of the plot
+function filldata(){
+    var readcookie = document.cookie.split(';');
+    var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
+    var valuearray=[0,1,2,3,4,5,6,7,8];
+
+    $.each(valuearray, function (index, value) {
+        var el = document.createElement('span');
+        $(el).addClass('col-xs-6 col-md-4');
+        switch (value){
+            case 0: $(el).html("Source Voltage(Vs, in V): "+cook['sourceV']);break;
+            case 1: $(el).html("Source Impedance(Zs, in ohm): "+cook['sourceImp']);break;
+            case 2: $(el).html("Load Impedance(Zl, in ohm): "+cook['loadImp']);break;
+            case 3: $(el).html("Resistance(ohm/cm): "+cook['resistance']);break;
+            case 4: $(el).html("Inductance(Henry/cm): "+cook['inductance']);break;
+            case 5: $(el).html("Capacitance(Farad/cm): "+cook['capacitance']);break;
+            case 6: $(el).html("Conductance(mho/cm): "+cook['conductance']);break;
+            case 7: $(el).html("Number of Unit Cell: "+cook['numberofcell']);break;
+            case 8: $(el).html("Number of Reflection: "+cook['numberofreflection']);break;
+            default: $(el).html("Something is wrong");
         }
-	</script>
+        $('#data1').append(el);
+    });
+}
+</script>
 </body>
 </html>

@@ -1,46 +1,46 @@
 <!DOCTYPE html>
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="favicon.ico" />
-  <script src="js/jquery-3.2.1.min.js"></script>
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <script src="js/bootstrap.min.js"></script>
-  <script src="js/math.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico" />
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/math.min.js"></script>
     <script src="js/bootbox.min.js"></script>
     <script src="js/download2.js"></script>
-  <script src="js/definations.js"></script>
-  <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
-	<script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
-@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
-	<script src="js/chartjs/utils.js"></script>
+    <script src="js/definations.js"></script>
+    <script async="" src="js/chartjs/analytics.js"></script><script src="js/chartjs/moment.min.js"></script>
+    <script src="js/chartjs/Chart.js"></script><style type="text/css">/* Chart.js */
+    @-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
+    <script src="js/chartjs/utils.js"></script>
 </head>
+<!-- Provide design to the page -->
 <style>
-  .bmargin{
-    margin-bottom: 10px !important;
-  }
-  img{
-    width: 100%;
-  }
-  .img-bg{
-    /*background: lightgrey;*/
-    border-radius: 5px;
-    padding-bottom: 20px;
-  }
-  .tline{
-    margin-bottom:10px;
-  }
-  canvas {
+    .bmargin{
+        margin-bottom: 10px !important;
+    }
+    img{
+        width: 100%;
+    }
+    .img-bg{
+        border-radius: 5px;
+        padding-bottom: 20px;
+    }
+    .tline{
+        margin-bottom:10px;
+    }
+    canvas {
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
     }
-  #collectVariables{
-    padding: 10px;
-  }
-  body{
-    min-width: 728px;
-	background-color: rgba(0, 0, 0, 0.8588235294117647);
-  }
+    #collectVariables{
+        padding: 10px;
+    }
+    body{
+        min-width: 728px;
+        background-color: rgba(0, 0, 0, 0.8588235294117647);
+    }
 	.graphcss{
 		background-color: rgb(255, 245, 164);
     	margin: 20px 0 20px 0;
@@ -68,12 +68,14 @@
         background-color: #7dddf9;
     }
 </style>
+<!-- Body of the page begins. It contains the complete layout and text to be rendered. -->
 <body>
 <div class="container">
   <div class="container-fluid">
     <div class="hide graphcss">
         <h4 class="col-xs-12"><u>Initial data:</u></h4>
         <div id="data1"></div>
+        <!-- This create the 10 buttons which comes in distance space plots -->
         <div class="button-container col-xs-12">
             <button id="btnfor0" class="btn btn-info disabled" onclick="takeNode(0)">Analysis T*0.0</button>
             <button id="btnfor1" class="btn btn-info disabled" onclick="takeNode(1)">Analysis T*0.1</button>
@@ -89,23 +91,19 @@
         <canvas id="canvas" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
     <div class="hide graphcss">
-        <div id="data2"></div>
-		<canvas id="canvasIm" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
-	</div>
-    <div class="hide graphcss">
         <h4 class="col-xs-12"><u>Initial data:</u></h4>
         <div id="data3"></div>
 		<canvas id="canvas2" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
-	</div>
-    <div class="hide graphcss">
-        <div id="data4"></div>
-		<canvas id="canvas2Im" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
   </div>
 </div>
 <script>
   		var color = Chart.helpers.color;
+
+  		// Set the font size for the text inside the canvas
   		var scalefontsize = 16;
+
+  		// Configuration for distance space
 		var config = {
 			type: 'line',
 			data: {
@@ -173,129 +171,9 @@
 				},
 			}
 		};
+
+		// Configuration for time space
 		var config2 = {
-			type: 'line',
-			data: {
-				datasets: [{
-					label: 'Voltage',
-					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.green,
-					fill: false,
-                    yAxisID: 'voltage',
-					data: [],
-				},{
-					label: 'Current',
-					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.red,
-					fill: false,
-                    yAxisID: 'current',
-					data: [],
-				}]
-			},
-			options: {
-			    animation:false,
-				title: {
-				    display:true,
-                    fontSize:20,
-					text: 'Transmission Line'
-				},
-				scales: {
-					xAxes: [{
-						type: 'linear',
-						scaleLabel: {
-							display: true,
-							labelString: 'Time(sec)',
-                            fontSize:scalefontsize
-						}
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'Voltage(V)',
-                            fontSize:scalefontsize
-						},
-						id:'voltage',
-                        type:'linear',
-                        position:'left',
-					},{
-					    scaleLabel: {
-							display: true,
-							labelString: 'Current(I)',
-                            fontSize:scalefontsize
-						},
-						id:'current',
-                        type:'linear',
-                        position:'right',
-                    }]
-				},
-			}
-		};
-		var configIm = {
-			type: 'line',
-			data: {
-				datasets: [{
-					label: 'Voltage',
-					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.green,
-					fill: false,
-                    yAxisID: 'voltage',
-					data: [],
-				},{
-					label: 'Current',
-					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.red,
-					fill: false,
-                    yAxisID: 'current',
-					data: [],
-				}]
-			},
-			options: {
-			    animation:false,
-				title: {
-				    display:true,
-                    fontSize:20,
-					text: 'Transmission Line'
-				},
-				scales: {
-					xAxes: [{
-						type: 'linear',
-						scaleLabel: {
-							display: true,
-							labelString: 'Distance(cm)',
-                            fontSize:scalefontsize
-						}
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'Voltage(V)',
-                            fontSize:scalefontsize
-						},
-						id:'voltage',
-                        type:'linear',
-                        position:'left',
-                        ticks:{
-						    suggestedMin:0,
-                            suggestedMax:0
-                        }
-					},{
-					    scaleLabel: {
-							display: true,
-							labelString: 'Current(I)',
-                            fontSize:scalefontsize
-						},
-						id:'current',
-                        type:'linear',
-                        position:'right',
-                        ticks:{
-						    suggestedMin:0,
-                            suggestedMax:0
-                        }
-                    }]
-				},
-			}
-		};
-		var config2Im = {
 			type: 'line',
 			data: {
 				datasets: [{
@@ -354,38 +232,37 @@
 		};
 
 		window.onload = function() {
+            // Initialize canvas on page load
 			var ctx = document.getElementById('canvas').getContext('2d');
 			var ctx2 = document.getElementById('canvas2').getContext('2d');
-			var ctxIm = document.getElementById('canvasIm').getContext('2d');
-			var ctx2Im = document.getElementById('canvas2Im').getContext('2d');
 
+			// Create global variable so that they can be used later.
 			window.myLine = new Chart(ctx, config);
 			window.myLine2 = new Chart(ctx2, config2);
-			window.myLineIm = new Chart(ctxIm, configIm);
-			window.myLine2Im = new Chart(ctx2Im, config2Im);
 		};
+		// Read cookie and extract the parameters saved in first screen
 		var readcook = document.cookie.split(';');
     	var parsecook = JSON.parse(readcook[0].substring(5,readcook[0].length));
 
+    	// Check running mode and show only required graph
     	if(parsecook['runningmode']=="distance")
 		{
 		    $('#canvas').parent().removeClass('hide');
-		    // $('#canvasIm').parent().removeClass('hide');
 		}
 		else if(parsecook['runningmode']=="time")
 		{
 		    $('#canvas2').parent().removeClass('hide');
-		    // $('#canvas2Im').parent().removeClass('hide');
 		}
 		else if(parsecook['runningmode']=="both")
 		{
 		    $('#canvas').parent().removeClass('hide');
 		    $('#canvas2').parent().removeClass('hide');
-		    // $('#canvasIm').parent().removeClass('hide');
-		    // $('#canvas2Im').parent().removeClass('hide');
 		}
 
+		// Call the function to start calculating values
 		startnew();
+
+    	// This function provides user to source and load analysis
     	function saveForAnalysis(dataID, nodeforanalysis) {
     	    var dataname= "data"+dataID;
     	    var data;
@@ -401,13 +278,15 @@
             localStorage.setItem("data", JSON.stringify(data));
             window.open('analysis.html');
         }
+
+        // This function shows a dialog box, when user clicks on 1 of the 10 buttons, which consists button to do source analysis, load analysis and download CSV file.
         function takeNode(dataID) {
             var dialog = bootbox.dialog({
                         closeButton: true,
                         message: "Please choose the point:-",
                         buttons:{
                             button1:{
-                                label:"Starting point",
+                                label:"Source Analysis",
                                 className:"btn-primary",
                                 callback: function (result) {
                                     console.log(result);
@@ -415,7 +294,7 @@
                                 }
                             },
                             button2:{
-                                label:"End point",
+                                label:"Load Analysis",
                                 className:"btn-primary",
                                 callback: function (result) {
                                     console.log(result);
@@ -433,6 +312,8 @@
                         },
 
             });
+
+            // This function create CSV content from the available data, and triggers download to export the values in file.
             function downloadCSV(dataID){
                 var readcookie = document.cookie.split(';');
                 var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));

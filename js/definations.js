@@ -1,5 +1,7 @@
+//Create few global variables
 // voltage datasets
   completeDatasetV = [];
+
 // current datasets
   completeDatasetI = [];
 
@@ -7,34 +9,33 @@
     ReflectionCoeff = [];
     TransmissionCoeff = [];
 
+// Time to wait
 sleeptime=100;
 
+// This function needs to be called to start calculating values
 async function startnew(){
+    // Clear the plot for inserting new values
     for(var i=0; i<config.data.datasets.length;i++)
         config.data.datasets[i].data=[];
     await sleep(200);
     window.myLine.update();
 
-    for(var i=0; i<configIm.data.datasets.length;i++)
-        configIm.data.datasets[i].data=[];
-    window.myLineIm.update();
     for(var i=0; i<config2.data.datasets.length;i++)
         config2.data.datasets[i].data=[];
     window.myLine2.update();
 
-    for(var i=0; i<config2Im.data.datasets.length;i++)
-        config2Im.data.datasets[i].data=[];
-    // await sleep(200);
-    window.myLine2Im.update();
-
+    // Empty the global variable dataset
     completeDatasetV = [];
     completeDatasetI = [];
     ReflectionCoeff = [];
     TransmissionCoeff = [];
-    // sleeptime=1000/math.eval($('#numberofvaluestoplot').val());
-    var readcookie = document.cookie.split(';')
+
+    // Read data from cookie
+    var readcookie = document.cookie.split(';');
     var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
     console.log(cook);
+
+    // Parse source voltage
     var sourceV = {"amp":"", "w":"", "f":"", "name":""};
     var Volt = math.parse(cook['sourceV']);
     Volt.args.forEach(function(d, i){
@@ -65,17 +66,21 @@ async function startnew(){
     var Zs = math.complex(cook['sourceImp']);
     var numberofcell = math.eval(cook['numberofcell']);
 
-    // propagation constant, p
-    // attenuation constant, a
-    // phase constant, b
+    // Propagation constant, p
+    // Attenuation constant, a
+    // Phase constant, b
     var b = sourceV.w * Math.sqrt(l * c);
     var a = (r * Math.sqrt( c / l) / 2) + (g * Math.sqrt( l / c) / 2);
     var p = math.complex(a,b);
 
-    // characteristic impedance, Zo
+    // Characteristic impedance, Zo
     var Zo = math.sqrt(math.divide(math.complex(r,sourceV.w*l),math.complex(g,sourceV.w * c)));
+
+    // Use this to verify the result of bounce diagram example
     // Zo.re = 100;
     // Zo.im = 0;
+
+    // Calculate reflection and transmission coefficients
     ReflectionCoeff.push(math.divide(math.subtract(Zo, Zs), math.add(Zo, Zs)));
     ReflectionCoeff.push(math.divide(math.subtract(Zl, Zo), math.add(Zl, Zo)));
     ReflectionCoeff.push(math.divide(math.subtract(Zs, Zo), math.add(Zs, Zo)));
@@ -84,10 +89,12 @@ async function startnew(){
     TransmissionCoeff.push(math.divide(math.multiply(2, Zs), math.add(Zs, Zo)));
     var const_a = calculateTanh(math.multiply(p, numberofcell+1));
     var Zin = math.multiply(Zo,math.divide(math.add(Zl, math.multiply(math.complex(0,1),Zo,const_a)),math.add(Zo, math.multiply(math.complex(0,1),Zl, const_a))));
+
+    // Use this to verify the result of bounce diagram example
     // Zin.re = 100;
     // Zin.im = 0;
+
     var TotalZ = math.add(Zs, Zin);
-    // window.location.hash="canvas";
     if(cook['runningmode']=="distance"){
         filldata("distance",Zo);
         createDataset(2*Math.PI/sourceV.w,numberofcell, Zs, TotalZ, sourceV);
@@ -103,6 +110,7 @@ async function startnew(){
     }
 }
 
+// This function is used to fill the relevant information above the plot
 function filldata(runningtype, Z0){
     var readcookie = document.cookie.split(';');
     var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
@@ -136,31 +144,25 @@ function filldata(runningtype, Z0){
             case 13: $(el).html("Steps (in sec): "+cook['step']);break;
             default: $(el).html("Something is wrong");
         }
-        if(runningtype == "distance" || runningtype == 'both'){
+        if(runningtype == "distance"){
             $('#data1').append(el);
         }
         else if(runningtype == "time"){
             $('#data3').append(el);
         }
+        else if(runningtype == 'both'){
+            $('#data1').append(el);
+            $('#data3').html($('#data1').html());
+        }
     });
-    if(runningtype == "distance"){
-        $('#data2').html($('#data1').html());
-    }
-    else if(runningtype == "time"){
-        $('#data4').html($('#data3').html());
-    }
-    else{
-        $('#data2').html($('#data1').html());
-        $('#data3').html($('#data1').html());
-        $('#data4').html($('#data1').html());
-    }
-
 }
 
+// This function is used to hold execution for ms(milliseconds) amount of time
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// This function returns the sum of the array
 function sumarray(arr){
     var sum = 0;
     for(var i=0;i<arr.length;i++){
@@ -169,14 +171,7 @@ function sumarray(arr){
     return sum;
 }
 
-function sumarrayIm(arr){
-    var sum = 0;
-    for(var i=0;i<arr.length;i++){
-        sum += arr[i].im;
-    }
-    return sum;
-}
-
+// This function add the voltage and current values to the plot
 function addvaluetoplot(x1,y1,x2,y2) {
     config.data.datasets[0].data.push({
                         x: x1,
@@ -188,53 +183,30 @@ function addvaluetoplot(x1,y1,x2,y2) {
                     });
     window.myLine.update();
 }
+
+// This function is used to edit the available voltage and current values in the plot
 function editvalueinplot(x1,y1,x2,y2){
     config.data.datasets[0].data[x1]['y']=y1;
     config.data.datasets[1].data[x2]['y']=y2;
     window.myLine.update();
 }
 
-function addvaluetoplotIm(x1,y1,x2,y2) {
-    configIm.data.datasets[0].data.push({
-                        x: x1,
-                        y: y1,
-                    });
-    configIm.data.datasets[1].data.push({
-                        x: x2,
-                        y: y2,
-                    });
-    window.myLineIm.update();
-}
-function editvalueinplotIm(x1,y1,x2,y2){
-    configIm.data.datasets[0].data[x1]['y']=y1;
-    configIm.data.datasets[1].data[x2]['y']=y2;
-    window.myLineIm.update();
-}
-
-
+// These function are used to clear already available values in the plot
 function clearplot(){
     for(var i=0; i<config.data.datasets.length;i++)
         config.data.datasets[i].data=[];
     window.myLine.update();
-}
-function clearplotIm(){
-    for(var i=0; i<configIm.data.datasets.length;i++)
-        configIm.data.datasets[i].data=[];
-    window.myLineIm.update();
 }
 function clearplot2(){
     for(var i=0; i<config2.data.datasets.length;i++)
         config2.data.datasets[i].data=[];
     window.myLine2.update();
 }
-function clearplot2Im(){
-    for(var i=0; i<config2Im.data.datasets.length;i++)
-        config2Im.data.datasets[i].data=[];
-    window.myLine2Im.update();
-}
 
+// This function get executed if the running mode is distance space
 async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
     var numberofdatasets=10;
+    // Reading data from cookie
     var readcookie = document.cookie.split(';');
     var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
     var numberofnodes = math.eval(cook['numberofcell'])+1;
@@ -246,16 +218,14 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
     var w = sourceVparsed.w;
     var Z1 = math.complex(r,w*l);
     var Z2 = math.complex(g,w*c);
+
+    // Calculating values for each node
     for(var factor=0;factor<numberofdatasets;factor++){
         config.options.title.text="Transmission Line @ t = Time Period * "+factor/numberofdatasets;
-        configIm.options.title.text="Transmission Line(Imaginary Part) @ t = Time Period * "+factor/numberofdatasets;
         window.myLine.update();
-        window.myLineIm.update();
         clearplot();
-        clearplotIm();
         var datasetV=[];
         var datasetI=[];
-        // console.log(factor/numberofdatasets);
         var scope = {"t":factor*T/numberofdatasets};
         var srcvol = math.parse(cook['sourceV'], scope);
         var compilesrcvol = srcvol.compile();
@@ -266,8 +236,6 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
         datasetI.push([Is]);
         console.log("Node 0 (V):"+datasetV[0][0].re, "Node 0 (I):"+datasetI[0][0].re);
         addvaluetoplot(0,datasetV[0][0].re,0, datasetI[0][0].re);
-        addvaluetoplotIm(0,datasetV[0][0].im,0, datasetI[0][0].im);
-        // console.log(sumarray(datasetI[0]));
         for(var node=1;node<numberofnodes;node++){
             var Vn=datasetV[node-1][0];
             var In=datasetI[node-1][0];
@@ -276,10 +244,8 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
             datasetV.push([Vn_plus_1]);
             datasetI.push([In_plus_1]);
             addvaluetoplot(node,Vn_plus_1.re,node,In_plus_1.re);
-            addvaluetoplotIm(node,Vn_plus_1.im,node,In_plus_1.im);
             console.log("Node "+node+" (V):"+Vn_plus_1.re, "Node "+node+" (I):"+In_plus_1.re);
             await sleep(sleeptime);
-            // console.log(sumarray(datasetI[node]));
         }
         for(var reflect=0;reflect<numberofreflection;reflect++){
             if((reflect%2)===0){
@@ -293,7 +259,6 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
                         datasetI[j].push(math.subtract(datasetI[j+1][reflect+1],math.multiply(Z2,datasetV[j+1][reflect+1])));
                     }
                     editvalueinplot(j,sumarray(datasetV[j]),j,sumarray(datasetI[j]));
-                    editvalueinplotIm(j,sumarrayIm(datasetV[j]),j,sumarrayIm(datasetI[j]));
                     console.log("Node "+j+" (V):"+datasetV[j][reflect+1].re, "Node "+j+" (I):"+datasetI[j][reflect+1]);
                     await sleep(sleeptime);
                 }
@@ -309,15 +274,14 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
                         datasetI[j].push(math.subtract(datasetI[j-1][reflect+1],math.multiply(Z2,datasetV[j-1][reflect+1])));
                     }
                     editvalueinplot(j,sumarray(datasetV[j]),j,sumarray(datasetI[j]));
-                    editvalueinplotIm(j,sumarrayIm(datasetV[j]),j,sumarrayIm(datasetI[j]));
                     console.log("Node "+j+" (V):"+datasetV[j][reflect+1].re, "Node "+j+" (I):"+datasetI[j][reflect+1]);
                     await sleep(sleeptime);
                 }
             }
         }
-        // console.log(datasetV, datasetI);
         completeDatasetV.push(datasetV);
         completeDatasetI.push(datasetI);
+        // Enabling buttons after completing calculation
         switch(factor){
             case 0 :$("#btnfor0").removeClass("disabled");break;
             case 1 :$("#btnfor1").removeClass("disabled");break;
@@ -330,10 +294,15 @@ async function createDataset(T,numofcell, sourceImp, TotalImp, sourceVparsed) {
             case 8 :$("#btnfor8").removeClass("disabled");break;
             case 9 :$("#btnfor9").removeClass("disabled");break;
         }
+
+        // Wait for 5 sec after completing calculation for each time, t
         await sleep(5000);
     }
   }
+
+// This function get executed if the running mode is time space
 function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
+    // Read data from cookie
     var readcookie = document.cookie.split(';');
     var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
     var nodevalue = math.eval(cook['nodevalue']);
@@ -341,6 +310,8 @@ function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
     var stop = math.eval(cook['ending point']);
     var step = math.eval(cook['step']);
     var V_and_t = JSON.parse(localStorage.getItem('V_and_t'));
+
+    // Calculate forward (V+,I+) and reflected(V-, I-) electrical signal values
     var Vs_at_t=V_and_t.Vs;
     var Is_at_t=math.divide(Vs_at_t,TotalZ);
     var V_0_t = math.multiply(math.subtract(Vs_at_t, math.multiply(Is_at_t,sourceImp)),TransmissionCoeff[0]);
@@ -353,9 +324,10 @@ function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
     var datasetV=[];
     var datasetI=[];
     var t=start;
-    // config.options.scales.xAxes[0].scaleLabel.labelString="time (sec)";
+
     config2.options.title.text="Transmission Line @ Node:"+nodevalue;
-    config2Im.options.title.text="Transmission Line(Imaginary Part) @ Node:"+nodevalue;
+
+    // Calculate and insert values of voltage and current in the plot
     var mytimer=setInterval(function () {
         var v = math.add(math.multiply(Vplus,math.exp(math.multiply(-1,gamma,nodevalue-1)),math.exp(math.complex(0,w*t))),math.multiply(Vminus,math.exp(math.multiply(gamma,nodevalue-1)), math.exp(math.complex(0,w*t))));
         var i = math.subtract(math.multiply(Iplus,math.exp(math.multiply(-1,gamma,nodevalue-1)),math.exp(math.complex(0,w*t))),math.multiply(Iminus,math.exp(math.multiply(gamma,nodevalue-1)), math.exp(math.complex(0,w*t))));
@@ -371,25 +343,14 @@ function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
             y: i.re
         });
         window.myLine2.update();
-        config2Im.data.datasets[0].data.push({
-            x: t,
-            y: v.im
-        });
-        config2Im.data.datasets[1].data.push({
-            x: t,
-            y: i.im
-        });
-        window.myLine2Im.update();
-
-
         t+=step;
         if(t>stop){
           clearInterval(mytimer);
         }
     },50);
-
-
 }
+
+// Function to calculate the tanh value. It returns a complex variable.
 function calculateTanh(value) {
       var e_x = math.dotPow(Math.E, value);
       var e_minus_x = math.dotPow(Math.E, math.multiply(-1,value));

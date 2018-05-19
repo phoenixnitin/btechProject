@@ -1,63 +1,63 @@
 <!DOCTYPE html>
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="favicon.ico" />
-  <script src="js/jquery-3.2.1.min.js"></script>
-  <script src="js/math.min.js"></script>
-  <script src="js/bootbox.min.js"></script>
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <script src="js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="fonts/muli/muli.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico" />
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/math.min.js"></script>
+    <script src="js/bootbox.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="fonts/muli/muli.css">
 </head>
+<!-- Provide design to the page -->
 <style>
-  .bmargin{
-    margin-bottom: 10px !important;
-  }
-  img{
-    width: 100%;
-  }
-  .img-bg{
-    background-color: #dfa66b;
-    border-radius: 5px;
-    /*padding-bottom: 20px;*/
-  }
-  .tline{
-    margin-bottom:10px;
-  }
-  canvas {
+    .bmargin{
+        margin-bottom: 10px !important;
+    }
+    img{
+        width: 100%;
+    }
+    .img-bg{
+        background-color: #dfa66b;
+        border-radius: 5px;
+    }
+    .tline{
+        margin-bottom:10px;
+    }
+    canvas {
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
     }
-  #collectVariables{
-    padding: 10px;
-    margin-top: 80px;
-    padding-bottom: 80px;
-  }
-  @media (min-width: 992px) {
-    #collectVariables {
-      margin-top: 0;
+    #collectVariables{
+        padding: 10px;
+        margin-top: 80px;
+        padding-bottom: 80px;
     }
-  }
-  #collectVariables >  div{
-      margin:10px 0;
-  }
-  #collectVariables > div:first-child > label, #collectVariables > div:nth-child(2) > label{
-    color: black;
-    text-decoration: underline;
-  }
-  @media (min-width: 992px){
-    #collectVariables > div{
-        width: 46%;
-        margin:10px 2%;
+    @media (min-width: 992px) {
+        #collectVariables {
+            margin-top: 0;
+        }
     }
-  }
-  body{
-    min-width: 728px;
-    background: linear-gradient(rgb(101, 175, 247),rgba(255, 119, 2, 0.529));
-      font-family: Muli;
-      font-size: 16px;
-  }
+    #collectVariables >  div{
+        margin:10px 0;
+    }
+    #collectVariables > div:first-child > label, #collectVariables > div:nth-child(2) > label{
+        color: black;
+        text-decoration: underline;
+    }
+    @media (min-width: 992px){
+        #collectVariables > div{
+            width: 46%;
+            margin:10px 2%;
+        }
+    }
+    body{
+        min-width: 728px;
+        background: linear-gradient(rgb(101, 175, 247),rgba(255, 119, 2, 0.529));
+        font-family: Muli;
+        font-size: 16px;
+    }
     .inside-container{
         background: rgba(0,0,0,0.9);
         color: white;
@@ -88,10 +88,10 @@
         background-color: #F05826;
     }
     body > div.bootbox.modal.fade.bootbox-prompt.in > div > div > div.modal-footer > button:first-child{
-      display: none;
+        display: none;
     }
     body > div.bootbox.modal.fade.bootbox-prompt.in > div > div > div.modal-body > div > form > input{
-      background-color: rgba(0,0,0,0.1);
+        background-color: rgba(0,0,0,0.1);
     }
 </style>
 <body>
@@ -99,6 +99,7 @@
   <div class="container-fluid">
       <h1 class="col-xs-12" style="font-family: Palatino Linotype; text-align: center; text-decoration: underline">Transmission Line Simulation</h1>
     <div class="col-md-12 inside-container">
+      <!-- Form to take input from the user -->
       <form id="collectVariables" class="form-group">
         <div class="tline col-sm-12 col-md-6 img-bg">
           <label>Transmission Line:</label>
@@ -156,20 +157,16 @@
           <input type="text" class="form-control" id="nodevalue" value="3" placeholder="3">
         </div>
         <div class="form-group bmargin col-md-6 hide">
-          <label for="starting">Starting Point:</label>
+          <label for="starting">Starting Point(in sec):</label>
           <input type="text" class="form-control" id="starting" value="0" placeholder="0">
         </div>
         <div class="form-group bmargin col-md-6 hide">
-          <label for="ending">Ending Point:</label>
+          <label for="ending">Ending Point(in sec):</label>
           <input type="text" class="form-control" id="ending" value="0.1" placeholder="0.1">
         </div>
         <div class="form-group bmargin col-md-6 hide">
           <label for="step">Steps(in sec):</label>
           <input type="text" class="form-control" id="step" value="0.002" placeholder="0.002">
-        </div>
-        <div class="form-group bmargin col-md-6" style="display: none">
-          <label for="numberofvaluestoplot">Number of values to plot in 1 sec (Max. 100):</label>
-          <input type="text" class="form-control" id="numberofvaluestoplot" value="10" placeholder="10">
         </div>
         <div class="col-xs-12" style="text-align: center;width: 96%;">
           <button type="submit" id="setCookie" class="button1" style="font-size: 18px; margin-top: 10px">Generate Graph</button>
@@ -179,27 +176,24 @@
   </div>
 </div>
 <script>
-  $(document).ready(function () {
-      function set_height(){
-        if($('.container').height()<=$(window).height()){
-            $('body').height($(window).height());
-        }
-        else{
-            $('body').height($('.container').height()+10);
-        }
-        // if($(document).width()>992){
-        $('#collectVariables > div:first-child').height($('#collectVariables > div:nth-child(2)').height());
-        // }
-        // else{
-        //     var heightlabel = $('#collectVariables > div:first-child > label').height();
-        //     var heightimg = $('#collectVariables > div:first-child > img').height();
-        //     $('#collectVariables > div:first-child').height(heightlabel+heightimg);
-        //   }
-      }
+$(document).ready(function () {
+    // Set proper height for the page and form container
+    function set_height(){
+    if($('.container').height()<=$(window).height()){
+        $('body').height($(window).height());
+    }
+    else{
+        $('body').height($('.container').height()+10);
+    }
+    $('#collectVariables > div:first-child').height($('#collectVariables > div:nth-child(2)').height());
+    }
+    set_height();
+    // Set height whenever the dimension of window get changed
+    $(window).resize(function () {
       set_height();
-      $(window).resize(function () {
-          set_height();
-      });
+    });
+
+    // Hide and show extra option for time space mode
     $('input[name="runningmode"]').click(function(){
         var runningmodevalue=document.querySelector('input[name="runningmode"]:checked').value;
         if(runningmodevalue=="distance"){
@@ -223,10 +217,11 @@
             $('#ending').parent().removeClass('hide');
             $('#step').parent().removeClass('hide');
         }
-      console.log("radio clicked");
-      console.log("value is:"+document.querySelector('input[name="runningmode"]:checked').value);
+        console.log("radio clicked");
+        console.log("value is:"+document.querySelector('input[name="runningmode"]:checked').value);
     });
 
+    // Collect all the input and store them in cookies
     $('#collectVariables').submit(function (event) {
         event.preventDefault();
         var cook = {};
@@ -245,10 +240,10 @@
         cook['numberofreflection']=$('#numberofreflection').val();
         cook['unitcell']=document.querySelector('input[name="optradio"]:checked').value;
         cook['runningmode']=document.querySelector('input[name="runningmode"]:checked').value;
-        cook['numberofvaluestoplot']=$('#numberofvaluestoplot').val();
         console.log(cook, JSON.stringify(cook));
         document.cookie = "data="+JSON.stringify(cook)+";path:/;expires:";
 
+        // If running mode is not distance space, then check if Vs at t=0 is zero or not. If it's 0, then ask user to enter time value, which gives non-zero voltage value, for the calculation of forward and reflected voltage. If everything is fine, new page can be opened.
         if(cook['runningmode']!='distance') {
             var sourceV = {"amp": "", "w": "", "f": "", "name": ""};
             var Volt = math.parse(cook['sourceV']);
@@ -271,7 +266,6 @@
             });
             sourceV.f = sourceV.w / (2 * Math.PI);
             console.log(sourceV);
-            var timeperiod = 1 / sourceV.f;
             var scope = {'t': 0};
             var srcvol = math.parse(cook['sourceV'], scope);
             var compilesrcvol = srcvol.compile();
@@ -289,27 +283,28 @@
             window.open("graph.html");
         }
     })
-  });
+});
 
-  function verifytime(compilesrcvol) {
-      var dialog = bootbox.prompt({
-                    closeButton: false,
-                    title: "Forward and reflected value of the Voltage cannot be found. Please enter time(in sec) at which V at node 0 is non-zero.",
-                    inputType: 'number',
-                    callback: function (result) {
-                        console.log(result, math.eval(result));
-                        var scope={'t':result};
-                        var Vs1 = compilesrcvol.eval(scope);
-                        if(Vs1 == 0){
-                            verifytime(compilesrcvol);
-                        }
-                        else{
-                            localStorage.setItem('V_and_t', JSON.stringify({"Vs": Vs1, "time": result}));
-                            window.open("graph.html");
-                        }
-                    }
-      });
-  }
+// Verify if Vs is non-zero for t=0 in time space.
+function verifytime(compilesrcvol) {
+    var dialog = bootbox.prompt({
+        closeButton: false,
+        title: "Forward and reflected value of the Voltage cannot be found. Please enter time(in sec) at which V at node 0 is non-zero.",
+        inputType: 'number',
+        callback: function (result) {
+            console.log(result, math.eval(result));
+            var scope={'t':result};
+            var Vs1 = compilesrcvol.eval(scope);
+            if(Vs1 == 0){
+                verifytime(compilesrcvol);
+            }
+            else{
+                localStorage.setItem('V_and_t', JSON.stringify({"Vs": Vs1, "time": result}));
+                window.open("graph.html");
+            }
+        }
+    });
+}
 </script>
 </body>
 </html>
