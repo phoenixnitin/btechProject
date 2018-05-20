@@ -316,7 +316,7 @@
 
             });
 
-            // This function create CSV content from the available data, and triggers download to export the values in file.
+            // This function create CSV content from the available data, and triggers download to export the values in file for distance space mode.
             function downloadCSV(dataID){
                 var readcookie = document.cookie.split(';');
                 var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
@@ -344,6 +344,8 @@
                 download(file, "analysis_T_0."+dataID+".csv", "text/plain");
             }
         }
+
+        // Function for downloading CSV data for time space mode.
         function saveintocsv() {
             var readcookie = document.cookie.split(';');
             var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
