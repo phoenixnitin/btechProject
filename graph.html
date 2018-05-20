@@ -95,6 +95,9 @@
     <div class="hide graphcss">
         <h4 class="col-xs-12"><u>Initial data:</u></h4>
         <div id="data3"></div>
+        <div class="button-container col-xs-12">
+            <button id="btnfortime" class="btn btn-info disabled" onclick="saveintocsv()">Download CSV</button>
+        </div>
 		<canvas id="canvas2" style="display: block; width: 1080px; height: 720px;" class="chartjs-render-monitor"></canvas>
 	</div>
     <div class="hide graphcss">
@@ -433,6 +436,8 @@
                         },
 
             });
+
+            // This function create CSV content from the available data, and triggers download to export the values in file for distance space mode.
             function downloadCSV(dataID){
                 var readcookie = document.cookie.split(';');
                 var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
@@ -460,6 +465,20 @@
                 download(file, "analysis_T_0."+dataID+".csv", "text/plain");
             }
         }
+
+        // Function for downloading CSV data for time space mode.
+        function saveintocsv() {
+            var readcookie = document.cookie.split(';');
+            var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
+            var nodevalue = math.eval(cook['nodevalue']);
+            var file="time, voltage, current\n";
+            for(var i=0;i<config2.data.datasets[0].data.length;i++){
+                file+=config2.data.datasets[0].data[i]['x']+", "+config2.data.datasets[0].data[i]['y']+", "+config2.data.datasets[1].data[i]['y'
+            };
+            console.log(file);
+            download(file, "timeDataValues_node_"+nodevalue+".csv", "text/plain");
+        }
+
 	</script>
 </body>
 </html>
