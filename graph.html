@@ -242,6 +242,7 @@
 			// Create global variable so that they can be used later.
 			window.myLine = new Chart(ctx, config);
 			window.myLine2 = new Chart(ctx2, config2);
+			window.nodevalue=0;
 		};
 		// Read cookie and extract the parameters saved in first screen
 		var readcook = document.cookie.split(';');
@@ -347,15 +348,12 @@
 
         // Function for downloading CSV data for time space mode.
         function saveintocsv() {
-            var readcookie = document.cookie.split(';');
-            var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
-            var nodevalue = math.eval(cook['nodevalue']);
             var file="time, voltage, current\n";
             for(var i=0;i<config2.data.datasets[0].data.length;i++){
                 file+=config2.data.datasets[0].data[i]['x']+", "+config2.data.datasets[0].data[i]['y']+", "+config2.data.datasets[1].data[i]['y']+"\n";
             };
             console.log(file);
-            download(file, "timeDataValues_node_"+nodevalue+".csv", "text/plain");
+            download(file, "timeDataValues_node_"+window.nodevalue+".csv", "text/plain");
         }
 	</script>
 </body>

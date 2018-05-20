@@ -306,6 +306,7 @@ function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
     var readcookie = document.cookie.split(';');
     var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
     var nodevalue = math.eval(cook['nodevalue']);
+    window.nodevalue = nodevalue;
     var start = math.eval(cook['starting point']);
     var stop = math.eval(cook['ending point']);
     var step = math.eval(cook['step']);
