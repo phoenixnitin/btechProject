@@ -366,6 +366,7 @@
 			window.myLine2 = new Chart(ctx2, config2);
 			window.myLineIm = new Chart(ctxIm, configIm);
 			window.myLine2Im = new Chart(ctx2Im, config2Im);
+			window.nodevalue=0;
 		};
 		var readcook = document.cookie.split(';');
     	var parsecook = JSON.parse(readcook[0].substring(5,readcook[0].length));
@@ -468,15 +469,12 @@
 
         // Function for downloading CSV data for time space mode.
         function saveintocsv() {
-            var readcookie = document.cookie.split(';');
-            var cook = JSON.parse(readcookie[0].substring(5,readcookie[0].length));
-            var nodevalue = math.eval(cook['nodevalue']);
             var file="time, voltage, current\n";
             for(var i=0;i<config2.data.datasets[0].data.length;i++){
-                file+=config2.data.datasets[0].data[i]['x']+", "+config2.data.datasets[0].data[i]['y']+", "+config2.data.datasets[1].data[i]['y'
+                file+=config2.data.datasets[0].data[i]['x']+", "+config2.data.datasets[0].data[i]['y']+", "+config2.data.datasets[1].data[i]['y']+"\n";
             };
             console.log(file);
-            download(file, "timeDataValues_node_"+nodevalue+".csv", "text/plain");
+            download(file, "timeDataValues_node_"+window.nodevalue+".csv", "text/plain");
         }
 
 	</script>
