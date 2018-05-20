@@ -346,6 +346,7 @@ function plottimedependence(gamma, sourceImp, Z0, TotalZ ,T,w){
         t+=step;
         if(t>stop){
           clearInterval(mytimer);
+          $('#btnfortime').removeClass('disabled');
         }
     },50);
 }
