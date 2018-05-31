@@ -131,8 +131,8 @@ function filldata(runningtype, Z0){
             case 8: $(el).html("Number of Reflection: "+cook['numberofreflection']);break;
             case 9: $(el).html("Characteristic Impedance(Z0, in ohm/cm): "+math.format(Z0,{"notation":"exponential", "precision":4}));break;
             case 10: $(el).html("Node Value: "+cook['nodevalue']);break;
-            case 11: $(el).html("Starting Point: "+cook['starting point']);break;
-            case 12: $(el).html("Ending Point: "+cook['ending point']);break;
+            case 11: $(el).html("Starting Point (in sec): "+cook['starting point']);break;
+            case 12: $(el).html("Ending Point (in sec): "+cook['ending point']);break;
             case 13: $(el).html("Steps (in sec): "+cook['step']);break;
             default: $(el).html("Something is wrong");
         }
